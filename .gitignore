@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# PyPI
+.pypirc
+
+# Hatch
+.hatch/
+.env
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Project specific
+# Mantener la estructura pero ignorar archivos compilados
+src/eip2nats/lib/*.so*
+src/eip2nats/lib/*.a
+
+# Build artifacts
+build/dependencies/
+*.cmake
+CMakeCache.txt
+CMakeFiles/
+Makefile
+
+# Logs
+*.log
