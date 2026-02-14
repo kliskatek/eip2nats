@@ -8,15 +8,62 @@ echo "  Configuración de eip2nats Project"
 echo "=============================================="
 echo ""
 
-# Verificar requisitos
+# Función para instalar paquetes faltantes (con comando verificable)
+install_package() {
+    local package=$1
+    local command_check=$2
+
+    if ! command -v $command_check >/dev/null 2>&1; then
+        echo "⚠️  $command_check no encontrado"
+        echo "📦 Instalando $package..."
+
+        if sudo apt-get update && sudo apt-get install -y $package; then
+            echo "✅ $package instalado correctamente"
+        else
+            echo "❌ Error instalando $package"
+            echo "   Por favor, instala manualmente con: sudo apt-get install $package"
+            exit 1
+        fi
+    else
+        echo "✅ $command_check ya está instalado"
+    fi
+}
+
+# Función para instalar librerías de desarrollo
+install_library() {
+    local package=$1
+
+    if ! dpkg -s $package >/dev/null 2>&1; then
+        echo "⚠️  $package no encontrado"
+        echo "📦 Instalando $package..."
+
+        if sudo apt-get update && sudo apt-get install -y $package; then
+            echo "✅ $package instalado correctamente"
+        else
+            echo "❌ Error instalando $package"
+            echo "   Por favor, instala manualmente con: sudo apt-get install $package"
+            exit 1
+        fi
+    else
+        echo "✅ $package ya está instalado"
+    fi
+}
+
+# Verificar e instalar requisitos
 echo "📋 Verificando requisitos del sistema..."
+echo ""
 
-command -v git >/dev/null 2>&1 || { echo "❌ git no encontrado. Instala con: sudo apt-get install git"; exit 1; }
-command -v cmake >/dev/null 2>&1 || { echo "❌ cmake no encontrado. Instala con: sudo apt-get install cmake"; exit 1; }
-command -v make >/dev/null 2>&1 || { echo "❌ make no encontrado. Instala con: sudo apt-get install build-essential"; exit 1; }
-command -v g++ >/dev/null 2>&1 || { echo "❌ g++ no encontrado. Instala con: sudo apt-get install g++"; exit 1; }
-command -v python3 >/dev/null 2>&1 || { echo "❌ python3 no encontrado. Instala con: sudo apt-get install python3"; exit 1; }
+install_package "git" "git"
+install_package "cmake" "cmake"
+install_package "build-essential" "make"
+install_package "g++" "g++"
+install_package "python3" "python3"
 
+# Instalar librerías de desarrollo
+install_library "libssl-dev"
+install_library "python3-dev"
+
+echo ""
 echo "✅ Todos los requisitos del sistema están instalados"
 echo ""
 
@@ -48,18 +95,11 @@ echo "=============================================="
 echo "  Paso 1: Compilar dependencias"
 echo "=============================================="
 echo ""
-echo "Esto descargará y compilará:"
+echo "Compilando dependencias:"
 echo "  • nats.c (cliente NATS)"
 echo "  • EIPScanner (librería EIP)"
 echo "  • Binding Python"
 echo ""
-read -p "¿Continuar? [Y/n] " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Yy]$ ]] && [[ ! -z $REPLY ]]; then
-    echo "Cancelado"
-    deactivate
-    exit 0
-fi
 
 python scripts/build_dependencies.py
 
