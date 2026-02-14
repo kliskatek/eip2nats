@@ -266,7 +266,7 @@ class DependencyBuilder:
         self.run_command(compile_cmd)
         
         print(f"✅ Binding compilado: {output_name.name}")
-    
+
     def build_all(self):
         """Compila todo"""
         print("\n" + "=" * 70)

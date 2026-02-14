@@ -39,9 +39,9 @@ source "$VENV_DIR/bin/activate"
 echo "⬆️  Actualizando pip..."
 pip install --upgrade pip
 
-# Instalar Hatch en el venv
-echo "📦 Instalando Hatch en el entorno virtual..."
-pip install hatch pybind11
+# Instalar dependencias de build en el venv
+echo "📦 Instalando dependencias de build en el entorno virtual..."
+pip install build pybind11 hatch twine
 
 echo ""
 echo "=============================================="
@@ -99,7 +99,7 @@ echo "✅ Librerías auxiliares:"
 ls -lh src/eip2nats/lib/*.so* 2>/dev/null | awk '{print "  ", $9, "(" $5 ")"}'
 echo ""
 
-hatch build
+python -m build --wheel
 
 if [ $? -ne 0 ]; then
     echo ""
@@ -107,6 +107,36 @@ if [ $? -ne 0 ]; then
     deactivate
     exit 1
 fi
+
+# Renombrar wheel a formato manylinux para PyPI
+echo ""
+echo "🔄 Renombrando wheel a formato manylinux..."
+python << 'EOF'
+from pathlib import Path
+
+dist_dir = Path("dist")
+wheels = list(dist_dir.glob("*-linux_*.whl"))
+
+for old_wheel in wheels:
+    old_name = old_wheel.name
+
+    if "linux_aarch64" in old_name:
+        new_name = old_name.replace(
+            "linux_aarch64",
+            "manylinux_2_17_aarch64.manylinux2014_aarch64"
+        )
+    elif "linux_x86_64" in old_name:
+        new_name = old_name.replace(
+            "linux_x86_64",
+            "manylinux_2_17_x86_64.manylinux2014_x86_64"
+        )
+    else:
+        continue
+
+    new_wheel = dist_dir / new_name
+    old_wheel.rename(new_wheel)
+    print(f"✅ Renombrado a: {new_name}")
+EOF
 
 echo ""
 echo "=============================================="

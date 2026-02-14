@@ -7,7 +7,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
-#include <nats/nats.h>
+#include <nats.h>
 #include <cip/connectionManager/NetworkConnectionParams.h>
 #include "SessionInfo.h"
 #include "ConnectionManager.h"
