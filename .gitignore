@@ -65,3 +65,4 @@ Makefile
 
 # Logs
 *.log
+*.dll

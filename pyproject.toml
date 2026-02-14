@@ -53,7 +53,9 @@ packages = {find = {where = ["src"]}}
 # Incluir los binarios compilados en el wheel
 eip2nats = [
     "eip_nats_bridge*.so",
+    "eip_nats_bridge*.pyd",
     "lib/*.so*",
+    "lib/*.dll",
 ]
 
 [tool.setuptools.exclude-package-data]

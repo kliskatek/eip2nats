@@ -1,0 +1,69 @@
+cmake_minimum_required(VERSION 3.14)
+project(eip_nats_binding LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+# Use modern FindPython (required for CMake >= 4.0 where FindPythonInterp was removed)
+set(PYBIND11_FINDPYTHON ON)
+
+# pybind11 (installed via pip)
+find_package(pybind11 REQUIRED)
+
+# Paths passed from build_dependencies.py
+# NATS_INCLUDE_DIR, EIP_INCLUDE_DIR, SRC_DIR, LIB_DIR
+
+pybind11_add_module(eip_nats_bridge
+    ${SRC_DIR}/bindings.cpp
+    ${SRC_DIR}/EIPtoNATSBridge.cpp
+)
+
+target_include_directories(eip_nats_bridge PRIVATE
+    ${NATS_INCLUDE_DIR}
+    ${EIP_INCLUDE_DIR}
+    ${SRC_DIR}
+)
+
+# Link against pre-built libraries
+if(WIN32)
+    # Windows: link against .lib import libraries
+    find_library(NATS_LIB NAMES nats PATHS ${LIB_DIR} NO_DEFAULT_PATH)
+    find_library(EIP_LIB NAMES EIPScanner PATHS ${LIB_DIR} NO_DEFAULT_PATH)
+
+    if(NOT NATS_LIB)
+        message(FATAL_ERROR "nats.lib not found in ${LIB_DIR}")
+    endif()
+    if(NOT EIP_LIB)
+        message(FATAL_ERROR "EIPScanner.lib not found in ${LIB_DIR}")
+    endif()
+
+    target_link_libraries(eip_nats_bridge PRIVATE ${NATS_LIB} ${EIP_LIB} ws2_32)
+else()
+    # Linux: link against .so with RPATH
+    target_link_libraries(eip_nats_bridge PRIVATE
+        -L${LIB_DIR}
+        -lnats
+        -lEIPScanner
+        -lpthread
+    )
+    set_target_properties(eip_nats_bridge PROPERTIES
+        BUILD_RPATH "${LIB_DIR}"
+        INSTALL_RPATH "$ORIGIN/lib"
+    )
+endif()
+
+# Output directly to SRC_DIR
+set_target_properties(eip_nats_bridge PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${SRC_DIR}
+    RUNTIME_OUTPUT_DIRECTORY ${SRC_DIR}
+)
+
+# For multi-config generators (MSVC), flatten output directories
+foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${CONFIG_TYPE} CONFIG_TYPE_UPPER)
+    set_target_properties(eip_nats_bridge PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER} ${SRC_DIR}
+        RUNTIME_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER} ${SRC_DIR}
+    )
+endforeach()
