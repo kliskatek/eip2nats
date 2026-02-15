@@ -1,0 +1,80 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-example-cpp",
+            "type": "shell",
+            "command": "python scripts/build_example_cpp.py",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": ["$gcc", "$msCompile"]
+        },
+        {
+            "label": "build-binding",
+            "type": "shell",
+            "command": "python scripts/build_binding.py",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": ["$gcc", "$msCompile"]
+        },
+        {
+            "label": "build-nats",
+            "type": "shell",
+            "command": "python scripts/build_nats.py",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "build-eipscanner",
+            "type": "shell",
+            "command": "python scripts/build_eipscanner.py",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "build-all",
+            "dependsOrder": "sequence",
+            "dependsOn": ["build-nats", "build-eipscanner", "build-binding"],
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "python -c \"import shutil, pathlib; shutil.rmtree('build/example_cpp', ignore_errors=True); [f.unlink() for f in pathlib.Path('src/eip2nats').glob('eip_nats_bridge*') if f.is_file()]\"",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build"
+        }
+    ]
+}

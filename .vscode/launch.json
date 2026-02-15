@@ -1,0 +1,54 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C++ Example (build + debug) [Linux]",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/example_cpp/example_cpp",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-example-cpp",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "C++ Example (build + debug) [Windows]",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/example_cpp/example_cpp.exe",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${workspaceFolder}/src/eip2nats/lib;${env:PATH}"
+                }
+            ],
+            "console": "integratedTerminal",
+            "preLaunchTask": "build-example-cpp"
+        },
+        {
+            "name": "Python Example (debug)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/example_python.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            }
+        }
+    ]
+}
