@@ -61,6 +61,6 @@ PYBIND11_MODULE(eip_nats_bridge, m) {
         });
 
     // Información del módulo
-    m.attr("__version__") = "1.0.0";
-    m.attr("__author__") = "Your Name";
+    m.attr("__version__") = "1.0.2";
+    m.attr("__author__") = "Ibon Zalbide";
 }

@@ -204,7 +204,7 @@ EOF
 
 echo ""
 echo "=============================================="
-echo "  Paso 3: Instalar wheel en el venv"
+echo "  Paso 5: Instalar wheel en el venv"
 echo "=============================================="
 echo ""
 
@@ -254,7 +254,6 @@ echo "  deactivate"
 echo ""
 echo "📝 Documentación:"
 echo "  cat README.md"
-echo "  cat QUICKSTART.md"
 echo ""
 
 # Mantener el venv activado para que el usuario pueda trabajar

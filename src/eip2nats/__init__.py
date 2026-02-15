@@ -52,5 +52,5 @@ try:
 except ImportError as e:
     raise ImportError(f"Error cargando el modulo eip2nats: {e}")
 
-__version__ = "1.0.0"
+__version__ = "1.0.2"
 __all__ = ["EIPtoNATSBridge"]

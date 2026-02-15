@@ -26,9 +26,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
 ]
 
-dependencies = [
-    "pybind11>=2.6.0",
-]
+dependencies = []
 
 [project.optional-dependencies]
 dev = [
@@ -48,11 +46,6 @@ Repository = "https://github.com/kliskatek/eip2nats"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/eip2nats"]
-
-# Include compiled binaries in the wheel
-[tool.hatch.build.targets.wheel.force-include]
-# These paths are relative to the project root
-# The binaries are built by scripts/build_*.py before wheel creation
 
 [tool.hatch.build]
 artifacts = [
