@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/src/eip2nats",
+                "${workspaceFolder}/build/dependencies/nats.c/src",
+                "${workspaceFolder}/build/dependencies/EIPScanner/src",
+                "/usr/lib/python3/dist-packages/pybind11/include",
+                "/usr/include/python3.11"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-arm64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
