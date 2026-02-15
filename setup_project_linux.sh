@@ -92,28 +92,52 @@ pip install build pybind11 hatch twine
 
 echo ""
 echo "=============================================="
-echo "  Paso 1: Compilar dependencias"
+echo "  Paso 1: Compilar nats.c"
 echo "=============================================="
 echo ""
-echo "Compilando dependencias:"
-echo "  • nats.c (cliente NATS)"
-echo "  • EIPScanner (librería EIP)"
-echo "  • Binding Python"
-echo ""
 
-python scripts/build_dependencies.py
+python scripts/build_nats.py
 
 if [ $? -ne 0 ]; then
     echo ""
-    echo "❌ Error compilando dependencias"
-    echo "Ver logs arriba para detalles"
+    echo "❌ Error compilando nats.c"
     deactivate
     exit 1
 fi
 
 echo ""
 echo "=============================================="
-echo "  Paso 2: Crear wheel"
+echo "  Paso 2: Compilar EIPScanner"
+echo "=============================================="
+echo ""
+
+python scripts/build_eipscanner.py
+
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "❌ Error compilando EIPScanner"
+    deactivate
+    exit 1
+fi
+
+echo ""
+echo "=============================================="
+echo "  Paso 3: Compilar binding Python"
+echo "=============================================="
+echo ""
+
+python scripts/build_binding.py
+
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "❌ Error compilando binding Python"
+    deactivate
+    exit 1
+fi
+
+echo ""
+echo "=============================================="
+echo "  Paso 4: Crear wheel"
 echo "=============================================="
 echo ""
 

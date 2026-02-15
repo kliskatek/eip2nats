@@ -33,13 +33,13 @@ Esto hace TODO automáticamente:
 source venv/bin/activate
 
 # Ejecutar ejemplo básico
-python examples/basic_example.py
+python examples/example_python.py
 
 # O test completo
 python examples/test_bridge.py
 
 # O usar el script helper
-./run.sh  # Ejecuta basic_example.py por defecto
+./run.sh  # Ejecuta example_python.py por defecto
 ./run.sh python examples/test_bridge.py
 
 # Desactivar cuando termines
@@ -94,13 +94,13 @@ Para desarrollo iterativo sin regenerar el wheel:
 # 1. Editar código
 nano src/eip2nats/EIPtoNATSBridge.cpp
 
-# 2. Opción A: Test C++ standalone (recomendado para debugging)
-./scripts/build_standalone.sh
-./test_standalone
+# 2. Opción A: Ejemplo C++ (recomendado para debugging)
+python scripts/build_example_cpp.py
+./example_cpp
 
 # 3. Opción B: Compilar binding Python (test de integración)
-./scripts/build_python_binding.sh
-python examples/basic_example.py
+python scripts/build_binding.py
+python examples/example_python.py
 ```
 
 **Ver guía completa:** [`DEVELOPMENT.md`](DEVELOPMENT.md)
@@ -109,7 +109,7 @@ python examples/basic_example.py
 - Workflow de desarrollo iterativo
 - Debugging con VSCode (recomendado) y GDB
 - Detección de memory leaks con Valgrind
-- Testing C++ standalone vs Python binding
+- Testing C++ bridge vs Python binding
 - Cuándo usar cada enfoque
 
 ### Crear Release
@@ -135,8 +135,10 @@ pip install hatch
 ### Compilar dependencias
 
 ```bash
-# Esto descarga y compila nats.c, EIPScanner y el binding Python
-python scripts/build_dependencies.py
+# Compilar cada dependencia por separado
+python scripts/build_nats.py
+python scripts/build_eipscanner.py
+python scripts/build_binding.py
 ```
 
 O usando Hatch:
@@ -178,9 +180,15 @@ eip2nats/
 │           ├── libEIPScanner.so
 │           └── eip2nats.*.so
 ├── scripts/
-│   └── build_dependencies.py  # Script de compilación
+│   ├── build_config.py          # Configuración compartida
+│   ├── build_nats.py            # Compila nats.c
+│   ├── build_eipscanner.py      # Compila EIPScanner
+│   └── build_binding.py         # Compila binding Python
+├── examples/
+│   ├── example_python.py        # Ejemplo Python
+│   └── example_cpp.cpp          # Ejemplo C++ (debugging)
 ├── tests/
-│   └── test_basic.py
+│   └── test_python.py           # Tests unitarios Python
 └── build/
     └── dependencies/           # Clones de nats.c y EIPScanner
         ├── nats.c/
@@ -189,13 +197,11 @@ eip2nats/
 
 ## 🔧 Cómo Funciona
 
-1. **`scripts/build_dependencies.py`**:
-   - Clona nats.c desde GitHub
-   - Compila nats.c → `libnats.so`
-   - Clona EIPScanner desde GitHub
-   - Compila EIPScanner → `libEIPScanner.so`
-   - Compila el binding Python → `eip2nats.*.so`
-   - Copia todos los `.so` a `src/eip2nats/lib/`
+1. **Scripts de compilación** (`scripts/`):
+   - `build_nats.py`: Clona y compila nats.c → `libnats.so`
+   - `build_eipscanner.py`: Clona y compila EIPScanner → `libEIPScanner.so`
+   - `build_binding.py`: Compila el binding Python → `eip2nats.*.so`
+   - Todos copian los binarios a `src/eip2nats/lib/`
 
 2. **`hatch build`**:
    - Ejecuta el build script automáticamente
@@ -263,7 +269,9 @@ Todas las dependencias deberían resolverse localmente.
 ```bash
 git clone <repo>
 cd eip2nats
-python scripts/build_dependencies.py
+python scripts/build_nats.py
+python scripts/build_eipscanner.py
+python scripts/build_binding.py
 hatch build
 ```
 

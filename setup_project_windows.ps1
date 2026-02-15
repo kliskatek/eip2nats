@@ -181,26 +181,48 @@ if (-not $SkipVenv) {
 Write-Host ""
 
 # ============================================================
-# Paso 2: Compilar dependencias
+# Paso 2: Compilar dependencias (nats.c, EIPScanner, binding)
 # ============================================================
 
 if (-not $SkipBuild) {
     Write-Host "==============================================" -ForegroundColor Cyan
-    Write-Host "  Paso 1: Compilar dependencias" -ForegroundColor Cyan
+    Write-Host "  Paso 1: Compilar nats.c" -ForegroundColor Cyan
     Write-Host "==============================================" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "Compilando dependencias:"
-    Write-Host "  - nats.c (cliente NATS)"
-    Write-Host "  - EIPScanner (libreria EIP)"
-    Write-Host "  - Binding Python (pybind11)"
-    Write-Host ""
 
-    & $pythonCmd scripts/build_dependencies.py
+    & $pythonCmd scripts/build_nats.py
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host ""
-        Write-Fail "Error compilando dependencias"
-        Write-Host "Ver logs arriba para detalles" -ForegroundColor Yellow
+        Write-Fail "Error compilando nats.c"
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "==============================================" -ForegroundColor Cyan
+    Write-Host "  Paso 2: Compilar EIPScanner" -ForegroundColor Cyan
+    Write-Host "==============================================" -ForegroundColor Cyan
+    Write-Host ""
+
+    & $pythonCmd scripts/build_eipscanner.py
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host ""
+        Write-Fail "Error compilando EIPScanner"
+        exit 1
+    }
+
+    Write-Host ""
+    Write-Host "==============================================" -ForegroundColor Cyan
+    Write-Host "  Paso 3: Compilar binding Python" -ForegroundColor Cyan
+    Write-Host "==============================================" -ForegroundColor Cyan
+    Write-Host ""
+
+    & $pythonCmd scripts/build_binding.py
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host ""
+        Write-Fail "Error compilando binding Python"
         exit 1
     }
 }
@@ -212,7 +234,7 @@ Write-Host ""
 # ============================================================
 
 Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host "  Paso 2: Crear wheel" -ForegroundColor Cyan
+Write-Host "  Paso 4: Crear wheel" -ForegroundColor Cyan
 Write-Host "==============================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -251,11 +273,11 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host ""
 
 # ============================================================
-# Paso 4: Instalar wheel en el venv
+# Paso 5: Instalar wheel en el venv
 # ============================================================
 
 Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host "  Paso 3: Instalar wheel en el venv" -ForegroundColor Cyan
+Write-Host "  Paso 5: Instalar wheel en el venv" -ForegroundColor Cyan
 Write-Host "==============================================" -ForegroundColor Cyan
 Write-Host ""
 

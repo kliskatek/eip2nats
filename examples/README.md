@@ -4,7 +4,7 @@ Ejemplos de uso del puente EIP to NATS.
 
 ## 📁 Archivo
 
-### `basic_example.py`
+### `example_python.py`
 Ejemplo básico y completo del uso del bridge.
 
 **Características:**
@@ -16,12 +16,12 @@ Ejemplo básico y completo del uso del bridge.
 **Ejecutar:**
 ```bash
 source venv/bin/activate
-python examples/basic_example.py
+python examples/example_python.py
 ```
 
 O con el helper:
 ```bash
-./run.sh  # Ejecuta basic_example.py por defecto
+./run.sh  # Ejecuta example_python.py por defecto
 ```
 
 ---

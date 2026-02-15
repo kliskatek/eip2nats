@@ -1,8 +1,8 @@
 /*
- * test_standalone.cpp
- * 
- * Programa C++ standalone para probar EIPtoNATSBridge
- * sin Python, ideal para debugging con VSCode/GDB
+ * example_cpp.cpp
+ *
+ * Ejemplo de uso del bridge EIPtoNATSBridge en C++ puro (sin Python),
+ * ideal para debugging con VSCode/GDB
  */
 
 #include "EIPtoNATSBridge.h"

@@ -11,7 +11,7 @@ set(PYBIND11_FINDPYTHON ON)
 # pybind11 (installed via pip)
 find_package(pybind11 REQUIRED)
 
-# Paths passed from build_dependencies.py
+# Paths passed from build_binding.py
 # NATS_INCLUDE_DIR, EIP_INCLUDE_DIR, SRC_DIR, LIB_DIR
 
 pybind11_add_module(eip_nats_bridge

@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel", "pybind11>=2.6.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "eip2nats"
@@ -46,26 +46,24 @@ Homepage = "https://github.com/kliskatek/eip2nats"
 Documentation = "https://github.com/kliskatek/eip2nats/blob/main/README.md"
 Repository = "https://github.com/kliskatek/eip2nats"
 
-[tool.setuptools]
-# Usar src/ layout
-packages = {find = {where = ["src"]}}
+[tool.hatch.build.targets.wheel]
+packages = ["src/eip2nats"]
 
-[tool.setuptools.package-data]
-# Incluir los binarios compilados en el wheel
-eip2nats = [
-    "eip_nats_bridge*.so",
-    "eip_nats_bridge*.pyd",
-    "lib/*.so*",
-    "lib/*.dll",
+# Include compiled binaries in the wheel
+[tool.hatch.build.targets.wheel.force-include]
+# These paths are relative to the project root
+# The binaries are built by scripts/build_*.py before wheel creation
+
+[tool.hatch.build]
+artifacts = [
+    "src/eip2nats/eip_nats_bridge*.so",
+    "src/eip2nats/eip_nats_bridge*.pyd",
+    "src/eip2nats/lib/*.so*",
+    "src/eip2nats/lib/*.dll",
 ]
 
-[tool.setuptools.exclude-package-data]
-# Excluir archivos fuente C++ del wheel
-eip2nats = [
-    "*.cpp",
-    "*.h",
-    "*.hpp",
-]
+[tool.hatch.build.targets.wheel.hooks.custom]
+# Uses hatch_build.py to force platform-specific wheel tags
 
 [tool.black]
 line-length = 100
