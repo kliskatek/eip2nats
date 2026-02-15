@@ -1,6 +1,6 @@
-# setup_project_windows.ps1 - Script para configurar el proyecto eip2nats en Windows
-# Requiere: Visual Studio Build Tools (MSVC), Git, CMake, Python 3.7+
-# Ejecutar desde: Developer PowerShell for VS o con vcvarsall.bat cargado
+# setup_project_windows.ps1 - Script to set up the eip2nats project on Windows
+# Requires: Visual Studio Build Tools (MSVC), Git, CMake, Python 3.7+
+# Run from: Developer PowerShell for VS or with vcvarsall.bat loaded
 
 param(
     [switch]$SkipVenv,
@@ -11,12 +11,12 @@ $ErrorActionPreference = "Stop"
 
 Write-Host ""
 Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host "  Configuracion de eip2nats Project (Windows)" -ForegroundColor Cyan
+Write-Host "  eip2nats Project Setup (Windows)" -ForegroundColor Cyan
 Write-Host "==============================================" -ForegroundColor Cyan
 Write-Host ""
 
 # ============================================================
-# Funciones auxiliares
+# Helper functions
 # ============================================================
 
 function Test-Command {
@@ -40,25 +40,25 @@ function Write-Warn {
 }
 
 # ============================================================
-# Paso 0: Verificar requisitos del sistema
+# Step 0: Check system requirements
 # ============================================================
 
-Write-Host "Verificando requisitos del sistema..." -ForegroundColor Yellow
+Write-Host "Checking system requirements..." -ForegroundColor Yellow
 Write-Host ""
 
 # Git
 if (Test-Command "git") {
-    Write-Step "git encontrado: $(git --version)"
+    Write-Step "git found: $(git --version)"
 } else {
-    Write-Fail "git no encontrado. Instalar desde https://git-scm.com/download/win"
+    Write-Fail "git not found. Install from https://git-scm.com/download/win"
     exit 1
 }
 
 # CMake
 if (Test-Command "cmake") {
-    Write-Step "cmake encontrado: $(cmake --version | Select-Object -First 1)"
+    Write-Step "cmake found: $(cmake --version | Select-Object -First 1)"
 } else {
-    Write-Fail "cmake no encontrado. Instalar desde https://cmake.org/download/ o via Visual Studio Installer"
+    Write-Fail "cmake not found. Install from https://cmake.org/download/ or via Visual Studio Installer"
     exit 1
 }
 
@@ -72,22 +72,22 @@ if (Test-Command "python") {
 
 if ($pythonCmd) {
     $pyVersion = & $pythonCmd --version 2>&1
-    Write-Step "$pythonCmd encontrado: $pyVersion"
+    Write-Step "$pythonCmd found: $pyVersion"
 } else {
-    Write-Fail "Python no encontrado. Instalar desde https://www.python.org/downloads/"
+    Write-Fail "Python not found. Install from https://www.python.org/downloads/"
     exit 1
 }
 
 # MSVC (cl.exe)
 $hasMSVC = Test-Command "cl"
 if ($hasMSVC) {
-    Write-Step "MSVC (cl.exe) encontrado"
+    Write-Step "MSVC (cl.exe) found"
 } else {
-    Write-Warn "cl.exe no encontrado en PATH"
+    Write-Warn "cl.exe not found in PATH"
     Write-Host ""
-    Write-Host "  MSVC no esta en el PATH. Opciones:" -ForegroundColor Yellow
-    Write-Host "    1. Ejecutar este script desde 'Developer PowerShell for VS'" -ForegroundColor Yellow
-    Write-Host "    2. Ejecutar primero: " -ForegroundColor Yellow -NoNewline
+    Write-Host "  MSVC is not in the PATH. Options:" -ForegroundColor Yellow
+    Write-Host "    1. Run this script from 'Developer PowerShell for VS'" -ForegroundColor Yellow
+    Write-Host "    2. Run first: " -ForegroundColor Yellow -NoNewline
     Write-Host 'vcvarsall.bat x64' -ForegroundColor White
     Write-Host ""
 
@@ -98,8 +98,8 @@ if ($hasMSVC) {
         if ($vsInstallPath) {
             $vcvarsall = Join-Path $vsInstallPath "VC\Auxiliary\Build\vcvarsall.bat"
             if (Test-Path $vcvarsall) {
-                Write-Host "  Encontrado Visual Studio en: $vsInstallPath" -ForegroundColor Cyan
-                Write-Host "  Intentando cargar entorno MSVC..." -ForegroundColor Cyan
+                Write-Host "  Found Visual Studio at: $vsInstallPath" -ForegroundColor Cyan
+                Write-Host "  Attempting to load MSVC environment..." -ForegroundColor Cyan
 
                 # Load vcvarsall environment into PowerShell
                 $envBefore = @{}
@@ -120,10 +120,10 @@ if ($hasMSVC) {
                 }
 
                 if (Test-Command "cl") {
-                    Write-Step "Entorno MSVC cargado correctamente"
+                    Write-Step "MSVC environment loaded successfully"
                     $hasMSVC = $true
                 } else {
-                    Write-Fail "No se pudo cargar el entorno MSVC automaticamente"
+                    Write-Fail "Could not load MSVC environment automatically"
                     exit 1
                 }
             }
@@ -131,62 +131,62 @@ if ($hasMSVC) {
     }
 
     if (-not $hasMSVC) {
-        Write-Fail "Visual Studio Build Tools no encontrado"
-        Write-Host "  Instalar desde: https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022" -ForegroundColor Yellow
-        Write-Host "  Seleccionar: 'Desarrollo para escritorio con C++'" -ForegroundColor Yellow
+        Write-Fail "Visual Studio Build Tools not found"
+        Write-Host "  Install from: https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022" -ForegroundColor Yellow
+        Write-Host "  Select: 'Desktop development with C++'" -ForegroundColor Yellow
         exit 1
     }
 }
 
 Write-Host ""
-Write-Step "Todos los requisitos del sistema estan instalados"
+Write-Step "All system requirements are installed"
 Write-Host ""
 
 # ============================================================
-# Paso 1: Crear entorno virtual
+# Step 1: Create virtual environment
 # ============================================================
 
 $VENV_DIR = "venv"
 
 if (-not $SkipVenv) {
     if (Test-Path $VENV_DIR) {
-        Write-Host "Entorno virtual ya existe en $VENV_DIR" -ForegroundColor Cyan
+        Write-Host "Virtual environment already exists in $VENV_DIR" -ForegroundColor Cyan
     } else {
-        Write-Host "Creando entorno virtual en $VENV_DIR..." -ForegroundColor Cyan
+        Write-Host "Creating virtual environment in $VENV_DIR..." -ForegroundColor Cyan
         & $pythonCmd -m venv $VENV_DIR
-        Write-Step "Entorno virtual creado"
+        Write-Step "Virtual environment created"
     }
 }
 
 # Always activate the venv (even with -SkipVenv, we need it active)
-Write-Host "Activando entorno virtual..." -ForegroundColor Cyan
+Write-Host "Activating virtual environment..." -ForegroundColor Cyan
 $activateScript = Join-Path $VENV_DIR "Scripts\Activate.ps1"
 if (Test-Path $activateScript) {
     . $activateScript
 } else {
-    Write-Fail "No se encontro el script de activacion: $activateScript"
+    Write-Fail "Activation script not found: $activateScript"
     exit 1
 }
 
 if (-not $SkipVenv) {
-    # Actualizar pip (usar python -m pip para evitar problemas de auto-update en Windows)
-    Write-Host "Actualizando pip..." -ForegroundColor Cyan
+    # Upgrade pip (use python -m pip to avoid self-update issues on Windows)
+    Write-Host "Upgrading pip..." -ForegroundColor Cyan
     & $pythonCmd -m pip install --upgrade pip
 
-    # Instalar dependencias de build
-    Write-Host "Instalando dependencias de build..." -ForegroundColor Cyan
+    # Install build dependencies
+    Write-Host "Installing build dependencies..." -ForegroundColor Cyan
     & $pythonCmd -m pip install build pybind11 hatch twine
 }
 
 Write-Host ""
 
 # ============================================================
-# Paso 2: Compilar dependencias (nats.c, EIPScanner, binding)
+# Steps 2-4: Build dependencies (nats.c, EIPScanner, binding)
 # ============================================================
 
 if (-not $SkipBuild) {
     Write-Host "==============================================" -ForegroundColor Cyan
-    Write-Host "  Paso 1: Compilar nats.c" -ForegroundColor Cyan
+    Write-Host "  Step 2: Build nats.c" -ForegroundColor Cyan
     Write-Host "==============================================" -ForegroundColor Cyan
     Write-Host ""
 
@@ -194,13 +194,13 @@ if (-not $SkipBuild) {
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host ""
-        Write-Fail "Error compilando nats.c"
+        Write-Fail "Error building nats.c"
         exit 1
     }
 
     Write-Host ""
     Write-Host "==============================================" -ForegroundColor Cyan
-    Write-Host "  Paso 2: Compilar EIPScanner" -ForegroundColor Cyan
+    Write-Host "  Step 3: Build EIPScanner" -ForegroundColor Cyan
     Write-Host "==============================================" -ForegroundColor Cyan
     Write-Host ""
 
@@ -208,13 +208,13 @@ if (-not $SkipBuild) {
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host ""
-        Write-Fail "Error compilando EIPScanner"
+        Write-Fail "Error building EIPScanner"
         exit 1
     }
 
     Write-Host ""
     Write-Host "==============================================" -ForegroundColor Cyan
-    Write-Host "  Paso 3: Compilar binding Python" -ForegroundColor Cyan
+    Write-Host "  Step 4: Build Python binding" -ForegroundColor Cyan
     Write-Host "==============================================" -ForegroundColor Cyan
     Write-Host ""
 
@@ -222,7 +222,7 @@ if (-not $SkipBuild) {
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host ""
-        Write-Fail "Error compilando binding Python"
+        Write-Fail "Error building Python binding"
         exit 1
     }
 }
@@ -230,34 +230,34 @@ if (-not $SkipBuild) {
 Write-Host ""
 
 # ============================================================
-# Paso 3: Crear wheel
+# Step 5: Create wheel
 # ============================================================
 
 Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host "  Paso 4: Crear wheel" -ForegroundColor Cyan
+Write-Host "  Step 5: Create wheel" -ForegroundColor Cyan
 Write-Host "==============================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Verificar que las librerias existen
+# Verify that libraries exist
 $libDir = "src\eip2nats\lib"
 $dlls = Get-ChildItem -Path $libDir -Filter "*.dll" -ErrorAction SilentlyContinue
 if (-not $dlls) {
-    Write-Fail "No se encontraron DLLs en $libDir"
+    Write-Fail "No DLLs found in $libDir"
     exit 1
 }
 
-Write-Step "DLLs encontradas:"
+Write-Step "DLLs found:"
 $dlls | ForEach-Object { Write-Host "    $($_.Name) ($([math]::Round($_.Length/1KB, 1)) KB)" }
 Write-Host ""
 
-# Verificar que el modulo Python existe
+# Verify that the Python module exists
 $pydFiles = Get-ChildItem -Path "src\eip2nats" -Filter "eip_nats_bridge*.pyd" -ErrorAction SilentlyContinue
 if (-not $pydFiles) {
-    Write-Fail "No se encontro el modulo Python compilado (.pyd) en src\eip2nats\"
+    Write-Fail "Compiled Python module (.pyd) not found in src\eip2nats\"
     exit 1
 }
 
-Write-Step "Modulo Python compilado:"
+Write-Step "Compiled Python module:"
 $pydFiles | ForEach-Object { Write-Host "    $($_.Name) ($([math]::Round($_.Length/1KB, 1)) KB)" }
 Write-Host ""
 
@@ -266,66 +266,66 @@ Write-Host ""
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
-    Write-Fail "Error creando wheel"
+    Write-Fail "Error creating wheel"
     exit 1
 }
 
 Write-Host ""
 
 # ============================================================
-# Paso 5: Instalar wheel en el venv
+# Step 6: Install wheel in the venv
 # ============================================================
 
 Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host "  Paso 5: Instalar wheel en el venv" -ForegroundColor Cyan
+Write-Host "  Step 6: Install wheel in the venv" -ForegroundColor Cyan
 Write-Host "==============================================" -ForegroundColor Cyan
 Write-Host ""
 
 $wheelFile = Get-ChildItem -Path "dist" -Filter "eip2nats-*.whl" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
 if ($wheelFile) {
-    Write-Host "Instalando $($wheelFile.Name) en el entorno virtual..."
+    Write-Host "Installing $($wheelFile.Name) in the virtual environment..."
     & $pythonCmd -m pip install $wheelFile.FullName --force-reinstall
 
     if ($LASTEXITCODE -eq 0) {
-        Write-Step "Wheel instalado en el entorno virtual"
+        Write-Step "Wheel installed in the virtual environment"
     } else {
-        Write-Fail "Error instalando wheel"
+        Write-Fail "Error installing wheel"
         exit 1
     }
 } else {
-    Write-Fail "No se encontro el wheel en dist\"
+    Write-Fail "Wheel not found in dist\"
     exit 1
 }
 
 Write-Host ""
 
 # ============================================================
-# Resumen final
+# Final summary
 # ============================================================
 
 Write-Host "==============================================" -ForegroundColor Green
-Write-Host "  Configuracion Completa!" -ForegroundColor Green
+Write-Host "  Setup Complete!" -ForegroundColor Green
 Write-Host "==============================================" -ForegroundColor Green
 Write-Host ""
 
-Write-Host "Wheel creado en: dist\" -ForegroundColor Cyan
+Write-Host "Wheel created in: dist\" -ForegroundColor Cyan
 Get-ChildItem dist\*.whl | ForEach-Object { Write-Host "  $($_.Name) ($([math]::Round($_.Length/1KB, 1)) KB)" }
 Write-Host ""
 
-Write-Host "El modulo esta instalado en el entorno virtual" -ForegroundColor Cyan
+Write-Host "The module is installed in the virtual environment" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "Para usar el proyecto:" -ForegroundColor Yellow
+Write-Host "To use the project:" -ForegroundColor Yellow
 Write-Host ""
-Write-Host "  # Activar entorno virtual:" -ForegroundColor White
+Write-Host "  # Activate virtual environment:" -ForegroundColor White
 Write-Host "  .\venv\Scripts\Activate.ps1" -ForegroundColor Gray
 Write-Host ""
-Write-Host "  # Probar:" -ForegroundColor White
+Write-Host "  # Test:" -ForegroundColor White
 Write-Host "  python -c `"import eip2nats; print(eip2nats.__version__)`"" -ForegroundColor Gray
 Write-Host ""
-Write-Host "  # Usar:" -ForegroundColor White
-Write-Host "  python tu_script.py" -ForegroundColor Gray
+Write-Host "  # Use:" -ForegroundColor White
+Write-Host "  python your_script.py" -ForegroundColor Gray
 Write-Host ""
-Write-Host "  # Desactivar cuando termines:" -ForegroundColor White
+Write-Host "  # Deactivate when done:" -ForegroundColor White
 Write-Host "  deactivate" -ForegroundColor Gray
 Write-Host ""

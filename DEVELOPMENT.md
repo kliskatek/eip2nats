@@ -1,23 +1,23 @@
-# Desarrollo con VSCode
+# Development with VSCode
 
-Guia para desarrollar y depurar eip2nats usando Visual Studio Code.
+Guide for developing and debugging eip2nats using Visual Studio Code.
 
-## Requisitos
+## Requirements
 
-### Extensiones recomendadas
+### Recommended Extensions
 
-Al abrir el proyecto, VSCode sugerira instalar las extensiones recomendadas (`.vscode/extensions.json`):
+When opening the project, VSCode will suggest installing the recommended extensions (`.vscode/extensions.json`):
 
 - **C/C++** (`ms-vscode.cpptools`) - IntelliSense, debugging
 - **C/C++ Extension Pack** (`ms-vscode.cpptools-extension-pack`)
 - **Python** (`ms-python.python`) - IntelliSense, debugging
-- **Pylance** (`ms-python.vscode-pylance`) - Analisis estatico Python
-- **CMake** (`twxs.cmake`) - Syntax highlighting CMake
+- **Pylance** (`ms-python.vscode-pylance`) - Python static analysis
+- **CMake** (`twxs.cmake`) - CMake syntax highlighting
 - **CMake Tools** (`ms-vscode.cmake-tools`)
 
-### Compilar dependencias (primera vez)
+### Build Dependencies (first time)
 
-Antes de poder compilar y depurar, hay que compilar las dependencias:
+Before building and debugging, compile the dependencies:
 
 ```bash
 # Linux
@@ -27,7 +27,7 @@ Antes de poder compilar y depurar, hay que compilar las dependencias:
 .\setup_project_windows.ps1
 ```
 
-O manualmente:
+Or manually:
 ```bash
 python scripts/build_nats.py
 python scripts/build_eipscanner.py
@@ -38,148 +38,148 @@ python scripts/build_binding.py
 
 ## Build Tasks
 
-El proyecto incluye tareas de build preconfiguradas. Ejecutar con `Ctrl+Shift+B` (build task por defecto) o `Ctrl+Shift+P` > "Tasks: Run Task".
+The project includes preconfigured build tasks. Run with `Ctrl+Shift+B` (default build task) or `Ctrl+Shift+P` > "Tasks: Run Task".
 
-| Tarea | Descripcion |
-|-------|-------------|
-| `build-example-cpp` | Compila el ejemplo C++ (tarea por defecto con `Ctrl+Shift+B`) |
-| `build-binding` | Compila el binding Python (.pyd/.so) |
-| `build-nats` | Compila nats.c desde fuentes |
-| `build-eipscanner` | Compila EIPScanner desde fuentes |
-| `build-all` | Ejecuta nats + eipscanner + binding en secuencia |
-| `clean` | Elimina artefactos compilados |
+| Task | Description |
+|------|-------------|
+| `build-example-cpp` | Builds the C++ example (default task with `Ctrl+Shift+B`) |
+| `build-binding` | Builds the Python binding (.pyd/.so) |
+| `build-nats` | Builds nats.c from source |
+| `build-eipscanner` | Builds EIPScanner from source |
+| `build-all` | Runs nats + eipscanner + binding in sequence |
+| `clean` | Removes compiled artifacts |
 
 ---
 
-## Configuraciones de Debug (F5)
+## Debug Configurations (F5)
 
-Hay 3 configuraciones de debug disponibles en el dropdown de Run and Debug (`Ctrl+Shift+D`):
+There are 3 debug configurations available in the Run and Debug dropdown (`Ctrl+Shift+D`):
 
 ### C++ Example (build + debug) [Windows]
 
-Para depurar el bridge C++ sin Python. Usa el debugger de Visual Studio (`cppvsdbg`).
+Debug the C++ bridge without Python. Uses the Visual Studio debugger (`cppvsdbg`).
 
-- **Pre-launch**: Compila automaticamente con `build-example-cpp`
-- **Ejecutable**: `build/example_cpp/example_cpp.exe`
-- **DLLs**: Se agregan al PATH automaticamente (`src/eip2nats/lib/`)
-- **stopAtEntry**: `true` - se detiene en `main()` para poner breakpoints
+- **Pre-launch**: Automatically builds with `build-example-cpp`
+- **Executable**: `build/example_cpp/example_cpp.exe`
+- **DLLs**: Automatically added to PATH (`src/eip2nats/lib/`)
+- **stopAtEntry**: `true` - stops at `main()` so you can set breakpoints
 
-**Uso tipico:**
-1. Abrir `examples/example_cpp.cpp` o `src/eip2nats/EIPtoNATSBridge.cpp`
-2. Poner breakpoints
-3. Seleccionar "C++ Example (build + debug) [Windows]" en el dropdown
-4. Pulsar F5
+**Typical usage:**
+1. Open `examples/example_cpp.cpp` or `src/eip2nats/EIPtoNATSBridge.cpp`
+2. Set breakpoints
+3. Select "C++ Example (build + debug) [Windows]" in the dropdown
+4. Press F5
 
 ### C++ Example (build + debug) [Linux]
 
-Igual que la version Windows pero usando GDB (`cppdbg`).
+Same as the Windows version but using GDB (`cppdbg`).
 
-- **Ejecutable**: `build/example_cpp/example_cpp`
+- **Executable**: `build/example_cpp/example_cpp`
 - **Debugger**: GDB (`/usr/bin/gdb`)
 
 ### Python Example (debug)
 
-Para depurar el bridge a traves del binding Python.
+Debug the bridge through the Python binding.
 
 - **Script**: `examples/example_python.py`
-- **justMyCode**: `false` - permite entrar en el codigo del binding
-- **PYTHONPATH**: Apunta a `src/` para importar el modulo local
+- **justMyCode**: `false` - allows stepping into binding code
+- **PYTHONPATH**: Points to `src/` to import the local module
 
-**Uso tipico:**
-1. Abrir `examples/example_python.py`
-2. Poner breakpoints en el script Python
-3. Seleccionar "Python Example (debug)"
-4. Pulsar F5
+**Typical usage:**
+1. Open `examples/example_python.py`
+2. Set breakpoints in the Python script
+3. Select "Python Example (debug)"
+4. Press F5
 
 ---
 
-## Workflow de desarrollo
+## Development Workflow
 
-### Modificar codigo C++ del bridge
-
-```
-1. Editar src/eip2nats/EIPtoNATSBridge.cpp o .h
-2. Ctrl+Shift+B (compila ejemplo C++)
-3. F5 con "C++ Example [Windows/Linux]"
-4. Depurar con breakpoints
-```
-
-El ejemplo C++ (`examples/example_cpp.cpp`) permite probar el bridge directamente sin pasar por Python, lo que simplifica el debugging del codigo C++.
-
-### Modificar bindings Python
+### Modifying C++ bridge code
 
 ```
-1. Editar src/eip2nats/bindings.cpp
+1. Edit src/eip2nats/EIPtoNATSBridge.cpp or .h
+2. Ctrl+Shift+B (builds C++ example)
+3. F5 with "C++ Example [Windows/Linux]"
+4. Debug with breakpoints
+```
+
+The C++ example (`examples/example_cpp.cpp`) allows testing the bridge directly without Python, simplifying C++ debugging.
+
+### Modifying Python bindings
+
+```
+1. Edit src/eip2nats/bindings.cpp
 2. Ctrl+Shift+P > "Tasks: Run Task" > "build-binding"
-3. F5 con "Python Example (debug)"
+3. F5 with "Python Example (debug)"
 ```
 
-### Modificar ejemplo Python
+### Modifying Python example
 
 ```
-1. Editar examples/example_python.py
-2. F5 con "Python Example (debug)"
-   (no necesita recompilar nada)
+1. Edit examples/example_python.py
+2. F5 with "Python Example (debug)"
+   (no recompilation needed)
 ```
 
 ---
 
-## IntelliSense C++
+## C++ IntelliSense
 
-La configuracion de IntelliSense esta en `.vscode/settings.json` y `.vscode/c_cpp_properties.json`. Los include paths apuntan a:
+IntelliSense configuration is in `.vscode/settings.json` and `.vscode/c_cpp_properties.json`. Include paths point to:
 
-- `src/eip2nats/` - Codigo fuente del bridge
-- `build/dependencies/nats.c/src/` - Headers de nats.c
-- `build/dependencies/EIPScanner/src/` - Headers de EIPScanner
+- `src/eip2nats/` - Bridge source code
+- `build/dependencies/nats.c/src/` - nats.c headers
+- `build/dependencies/EIPScanner/src/` - EIPScanner headers
 
-Estos directorios se crean automaticamente al compilar las dependencias. Si IntelliSense muestra errores de "include not found", ejecuta primero `build-nats` y `build-eipscanner`.
+These directories are created automatically when building dependencies. If IntelliSense shows "include not found" errors, run `build-nats` and `build-eipscanner` first.
 
 ---
 
-## Estructura de artefactos
+## Build Artifacts
 
-Despues de compilar, los artefactos quedan en:
+After building, artifacts are located at:
 
 ```
 src/eip2nats/
-    eip_nats_bridge*.pyd      # Binding Python (Windows)
-    eip_nats_bridge*.so        # Binding Python (Linux)
+    eip_nats_bridge*.pyd      # Python binding (Windows)
+    eip_nats_bridge*.so        # Python binding (Linux)
     lib/
-        nats.dll / libnats.so          # Libreria NATS
-        EIPScanner.dll / libEIPScanner.so  # Libreria EIPScanner
+        nats.dll / libnats.so          # NATS library
+        EIPScanner.dll / libEIPScanner.so  # EIPScanner library
 
 build/
     example_cpp/
-        example_cpp.exe / example_cpp  # Ejemplo C++ compilado
+        example_cpp.exe / example_cpp  # Compiled C++ example
     dependencies/
-        nats.c/                        # Fuentes + build de nats.c
-        EIPScanner/                    # Fuentes + build de EIPScanner
-    binding/                           # Build intermedio del binding
+        nats.c/                        # nats.c source + build
+        EIPScanner/                    # EIPScanner source + build
+    binding/                           # Binding intermediate build
 ```
 
 ---
 
 ## Troubleshooting
 
-### IntelliSense no encuentra headers
+### IntelliSense cannot find headers
 
-Ejecutar las tareas `build-nats` y `build-eipscanner` para clonar y compilar las dependencias. Los headers estan en `build/dependencies/`.
+Run the `build-nats` and `build-eipscanner` tasks to clone and compile dependencies. Headers are in `build/dependencies/`.
 
-### "DLL not found" al depurar C++ en Windows
+### "DLL not found" when debugging C++ on Windows
 
-La configuracion de launch.json ya agrega `src/eip2nats/lib/` al PATH. Si aun falla, verificar que las DLLs existen:
+The launch.json configuration already adds `src/eip2nats/lib/` to PATH. If it still fails, verify the DLLs exist:
 ```
 src/eip2nats/lib/nats.dll
 src/eip2nats/lib/EIPScanner.dll
 ```
 
-### "bad_alloc" al conectar al PLC (C++ Windows)
+### "bad_alloc" when connecting to PLC (C++ Windows)
 
-Esto ocurre si el ejemplo se compila en modo Debug pero las DLLs estan en Release (CRT mismatch). El build ya usa `RelWithDebInfo` para evitar esto. Si recompilas manualmente, asegurate de usar `--config RelWithDebInfo`.
+This happens if the example is compiled in Debug mode but the DLLs are Release (CRT mismatch). The build already uses `RelWithDebInfo` to avoid this. If you rebuild manually, make sure to use `--config RelWithDebInfo`.
 
-### El binding Python no carga
+### Python binding won't load
 
-Verificar que el `.pyd`/`.so` esta en `src/eip2nats/`:
+Verify the `.pyd`/`.so` exists in `src/eip2nats/`:
 ```bash
 # Windows
 dir src\eip2nats\eip_nats_bridge*.pyd
@@ -188,8 +188,8 @@ dir src\eip2nats\eip_nats_bridge*.pyd
 ls src/eip2nats/eip_nats_bridge*.so
 ```
 
-Si no existe, ejecutar la tarea `build-binding`.
+If missing, run the `build-binding` task.
 
-### Errores de compilacion en EIPScanner (Windows)
+### EIPScanner build errors (Windows)
 
-EIPScanner tiene problemas conocidos con Winsock en Windows. El script `build_eipscanner.py` aplica patches automaticamente. Si falla, verificar que Visual Studio Build Tools esta instalado con el componente "Desktop development with C++".
+EIPScanner has known issues with Winsock on Windows. The `build_eipscanner.py` script applies patches automatically. If it fails, verify that Visual Studio Build Tools is installed with the "Desktop development with C++" component.

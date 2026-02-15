@@ -1,32 +1,32 @@
 """
-Tests básicos para eip2nats
+Basic tests for eip2nats
 """
 import pytest
 
 
 def test_import():
-    """Verifica que el módulo se puede importar"""
+    """Verify that the module can be imported"""
     import eip2nats
     assert hasattr(eip2nats, 'EIPtoNATSBridge')
 
 
 def test_version():
-    """Verifica que tiene versión"""
+    """Verify that it has a version"""
     import eip2nats
     assert hasattr(eip2nats, '__version__')
     assert isinstance(eip2nats.__version__, str)
 
 
 def test_create_bridge():
-    """Verifica que se puede crear una instancia del bridge"""
+    """Verify that a bridge instance can be created"""
     import eip2nats
-    
+
     bridge = eip2nats.EIPtoNATSBridge(
         "192.168.1.100",
         "nats://localhost:4222",
         "test.subject"
     )
-    
+
     assert bridge is not None
     assert not bridge.is_running()
     assert bridge.get_received_count() == 0
@@ -34,68 +34,68 @@ def test_create_bridge():
 
 
 def test_bridge_with_binary_format():
-    """Verifica creación con formato binario"""
+    """Verify creation with binary format"""
     import eip2nats
-    
+
     bridge = eip2nats.EIPtoNATSBridge(
         "192.168.1.100",
         "nats://localhost:4222",
         "test.subject",
         True  # Binary format
     )
-    
+
     assert bridge is not None
 
 
 def test_bridge_with_json_format():
-    """Verifica creación con formato JSON"""
+    """Verify creation with JSON format"""
     import eip2nats
-    
+
     bridge = eip2nats.EIPtoNATSBridge(
         "192.168.1.100",
         "nats://localhost:4222",
         "test.subject",
         False  # JSON format
     )
-    
+
     assert bridge is not None
 
 
 def test_repr():
-    """Verifica que __repr__ funciona"""
+    """Verify that __repr__ works"""
     import eip2nats
-    
+
     bridge = eip2nats.EIPtoNATSBridge(
         "192.168.1.100",
         "nats://localhost:4222",
         "test.subject"
     )
-    
+
     repr_str = repr(bridge)
     assert "EIPtoNATSBridge" in repr_str
     assert "running=" in repr_str
 
 
-# Tests de integración (requieren PLC y NATS server reales)
-@pytest.mark.skip(reason="Requiere PLC y NATS server configurados")
+# Integration tests (require real PLC and NATS server)
+@pytest.mark.skip(reason="Requires configured PLC and NATS server")
 def test_start_stop():
-    """Test de inicio y parada del bridge"""
+    """Test bridge start and stop"""
     import eip2nats
     import time
-    
+
     bridge = eip2nats.EIPtoNATSBridge(
         "192.168.17.200",
         "nats://192.168.17.138:4222",
         "test.plc.data"
     )
-    
-    # Iniciar
+
+    # Start
     assert bridge.start() is True
     assert bridge.is_running() is True
-    
-    # Esperar un poco
+
+    # Wait a bit
     time.sleep(2)
-    
-    # Detener
+
+    # Stop
     bridge.stop()
     assert bridge.is_running() is False

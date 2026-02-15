@@ -1,15 +1,15 @@
 """
 eip2nats - EtherNet/IP to NATS Bridge
 
-Puente entre dispositivos EtherNet/IP (PLCs) y servidores NATS con
-todas las dependencias incluidas.
+Bridge between EtherNet/IP devices (PLCs) and NATS servers with
+all dependencies bundled.
 """
 
 import os
 import sys
 from pathlib import Path
 
-# Agregar el directorio lib al path de busqueda de librerias
+# Add lib directory to library search path
 _lib_dir = Path(__file__).parent / "lib"
 if _lib_dir.exists():
     if sys.platform.startswith('linux'):
@@ -22,12 +22,12 @@ if _lib_dir.exists():
         # Also add to PATH as fallback for older Python / subprocess calls
         os.environ['PATH'] = f"{_lib_dir};{os.environ.get('PATH', '')}"
 
-# Importar el modulo C++ - esta directamente en este directorio
+# Import the C++ module - located directly in this directory
 try:
     import importlib.util
     _module_dir = Path(__file__).parent
 
-    # Buscar el modulo compilado (.so en Linux, .pyd en Windows)
+    # Find the compiled module (.so on Linux, .pyd on Windows)
     _patterns = ["eip_nats_bridge*.pyd", "eip_nats_bridge*.so"] if sys.platform == 'win32' \
         else ["eip_nats_bridge*.so"]
 
@@ -47,10 +47,10 @@ try:
 
     if not _found:
         ext = ".pyd/.so" if sys.platform == 'win32' else ".so"
-        raise ImportError(f"No se encontro el modulo eip_nats_bridge compilado ({ext})")
+        raise ImportError(f"Compiled eip_nats_bridge module not found ({ext})")
 
 except ImportError as e:
-    raise ImportError(f"Error cargando el modulo eip2nats: {e}")
+    raise ImportError(f"Error loading eip2nats module: {e}")
 
 __version__ = "1.0.2"
 __all__ = ["EIPtoNATSBridge"]

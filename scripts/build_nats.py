@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Compila nats.c desde fuentes.
-Uso: python scripts/build_nats.py
+Builds nats.c from source.
+Usage: python scripts/build_nats.py
 """
 
 import sys
@@ -9,20 +9,20 @@ from build_config import BuildConfig, IS_WINDOWS, IS_LINUX
 
 
 def build_nats(cfg=None):
-    """Compila nats.c"""
+    """Build nats.c"""
     if cfg is None:
         cfg = BuildConfig()
 
     print("\n" + "=" * 70)
-    print("  Compilando nats.c")
+    print("  Building nats.c")
     print("=" * 70)
 
     nats_dir = cfg.deps_dir / "nats.c"
     nats_build_dir = nats_dir / "build"
 
-    # Clonar si no existe
+    # Clone if not present
     if not nats_dir.exists():
-        print("Clonando nats.c desde GitHub...")
+        print("Cloning nats.c from GitHub...")
         cfg.run_command([
             "git", "clone",
             "--depth", "1",
@@ -31,7 +31,7 @@ def build_nats(cfg=None):
             str(nats_dir)
         ])
     else:
-        print("nats.c ya existe, omitiendo clonacion")
+        print("nats.c already exists, skipping clone")
 
     # Build
     nats_build_dir.mkdir(exist_ok=True)
@@ -47,29 +47,28 @@ def build_nats(cfg=None):
     ]
 
     if IS_WINDOWS:
-        # Desactivar TLS para evitar dependencia de OpenSSL en Windows
-        # La opcion CMake en nats.c es NATS_BUILD_WITH_TLS (no NATS_BUILD_TLS)
+        # Disable TLS to avoid OpenSSL dependency on Windows
         cmake_args.append("-DNATS_BUILD_WITH_TLS=OFF")
 
-    print("\nConfigurando nats.c con CMake...")
+    print("\nConfiguring nats.c with CMake...")
     cfg.run_command(cmake_args, cwd=nats_build_dir)
 
-    print("\nCompilando nats.c...")
+    print("\nBuilding nats.c...")
     cfg.cmake_build(nats_build_dir)
 
-    # Copiar librerias
-    print("\nCopiando librerias nats.c...")
+    # Copy libraries
+    print("\nCopying nats.c libraries...")
     search_dirs = [nats_build_dir, nats_build_dir / "src"]
     copied = cfg.copy_shared_libs(search_dirs, "libnats" if IS_LINUX else "nats")
 
     if copied == 0:
-        print("\n  No se encontraron librerias")
-        print("Buscando archivos en build directory:")
+        print("\n  No libraries found")
+        print("Searching build directory:")
         for item in nats_build_dir.rglob("nats*" if IS_WINDOWS else "libnats*"):
             print(f"  Found: {item}")
-        raise RuntimeError("No se encontraron librerias nats compiladas")
+        raise RuntimeError("No compiled nats libraries found")
 
-    print(f"OK nats.c compilado - {copied} archivo(s) copiado(s)")
+    print(f"OK nats.c built - {copied} file(s) copied")
 
 
 if __name__ == "__main__":

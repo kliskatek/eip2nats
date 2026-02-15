@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Configuracion y utilidades compartidas para los scripts de build.
+Shared configuration and utilities for build scripts.
 """
 
 import os
@@ -16,7 +16,7 @@ IS_LINUX = sys.platform.startswith("linux")
 
 
 class BuildConfig:
-    """Paths y utilidades comunes para todos los scripts de build."""
+    """Common paths and utilities for all build scripts."""
 
     def __init__(self):
         self.root_dir = Path.cwd()
@@ -25,12 +25,12 @@ class BuildConfig:
         self.lib_dir = self.root_dir / "src" / "eip2nats" / "lib"
         self.src_dir = self.root_dir / "src" / "eip2nats"
 
-        # Crear directorios
+        # Create directories
         self.lib_dir.mkdir(parents=True, exist_ok=True)
         self.deps_dir.mkdir(parents=True, exist_ok=True)
 
     def run_command(self, cmd, cwd=None, env=None):
-        """Ejecuta un comando shell."""
+        """Run a shell command."""
         print(f"\n>  {' '.join(str(c) for c in cmd)}")
 
         result = subprocess.run(
@@ -52,7 +52,7 @@ class BuildConfig:
         return result
 
     def cmake_build(self, build_dir, config="Release"):
-        """Build con cmake (cross-platform: make en Linux, msbuild en Windows)."""
+        """Build with cmake (cross-platform: make on Linux, msbuild on Windows)."""
         if IS_WINDOWS:
             self.run_command([
                 "cmake", "--build", ".", "--config", config
@@ -63,11 +63,11 @@ class BuildConfig:
             ], cwd=build_dir)
 
     def copy_shared_libs(self, search_dirs, pattern_base):
-        """Copia librerias compartidas a lib_dir. Retorna numero de archivos copiados."""
+        """Copy shared libraries to lib_dir. Returns number of files copied."""
         copied = 0
 
         if IS_WINDOWS:
-            # En Windows, buscar .dll y .lib en subdirectorios Release/ tambien
+            # On Windows, search for .dll and .lib in Release/ subdirectories too
             all_search_dirs = []
             for d in search_dirs:
                 all_search_dirs.append(d)
@@ -78,14 +78,14 @@ class BuildConfig:
             for search_dir in all_search_dirs:
                 if not search_dir.exists():
                     continue
-                # Copiar .dll
+                # Copy .dll
                 for lib_file in search_dir.glob(f"{pattern_base}*.dll"):
                     if lib_file.is_file():
                         dst = self.lib_dir / lib_file.name
                         print(f"  + {lib_file.name} -> {dst.relative_to(self.root_dir)}")
                         shutil.copy2(lib_file, dst)
                         copied += 1
-                # Copiar .lib (import libraries para linkado)
+                # Copy .lib (import libraries for linking)
                 for lib_file in search_dir.glob(f"{pattern_base}*.lib"):
                     if lib_file.is_file():
                         dst = self.lib_dir / lib_file.name
@@ -93,18 +93,18 @@ class BuildConfig:
                         shutil.copy2(lib_file, dst)
                         copied += 1
         else:
-            # Linux: copiar .so y symlinks
+            # Linux: copy .so and symlinks
             for search_dir in search_dirs:
                 if not search_dir.exists():
                     continue
-                # Primero archivos reales
+                # Real files first
                 for lib_file in search_dir.glob(f"{pattern_base}*.so*"):
                     if lib_file.is_file() and not lib_file.is_symlink():
                         dst = self.lib_dir / lib_file.name
                         print(f"  + {lib_file.name} -> {dst.relative_to(self.root_dir)}")
                         shutil.copy2(lib_file, dst)
                         copied += 1
-                # Luego symlinks
+                # Then symlinks
                 for lib_file in search_dir.glob(f"{pattern_base}*.so*"):
                     if lib_file.is_symlink():
                         link_target = lib_file.readlink()

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Compila el ejemplo C++ del bridge (sin Python).
-Requiere que nats.c y EIPScanner ya esten compilados.
-Uso: python scripts/build_example_cpp.py
+Builds the C++ bridge example (without Python).
+Requires nats.c and EIPScanner to be already compiled.
+Usage: python scripts/build_example_cpp.py
 """
 
 import shutil
@@ -12,12 +12,12 @@ from build_config import BuildConfig, IS_WINDOWS
 
 
 def build_example_cpp(cfg=None):
-    """Compila el ejemplo C++ del bridge."""
+    """Build the C++ bridge example."""
     if cfg is None:
         cfg = BuildConfig()
 
     print("\n" + "=" * 70)
-    print("  Compilando ejemplo C++")
+    print("  Building C++ example")
     print("=" * 70)
 
     nats_dir = cfg.deps_dir / "nats.c"
@@ -26,13 +26,13 @@ def build_example_cpp(cfg=None):
     source = examples_dir / "example_cpp.cpp"
 
     if not source.exists():
-        raise FileNotFoundError(f"No se encontro {source}")
+        raise FileNotFoundError(f"Not found: {source}")
 
-    # Verificar que las dependencias estan compiladas
+    # Verify that dependencies are compiled
     if not (nats_dir / "build").exists() or not (eip_dir / "build").exists():
         raise RuntimeError(
-            "Las dependencias no estan compiladas.\n"
-            "Ejecuta primero: python scripts/build_nats.py && python scripts/build_eipscanner.py"
+            "Dependencies are not compiled.\n"
+            "Run first: python scripts/build_nats.py && python scripts/build_eipscanner.py"
         )
 
     build_dir = cfg.build_dir / "example_cpp"
@@ -44,12 +44,12 @@ def build_example_cpp(cfg=None):
     else:
         _build_gcc(cfg, nats_dir, eip_dir, source, output)
 
-    print(f"\nOK Ejemplo compilado: {output}")
-    print(f"   Ejecutar: {output}")
+    print(f"\nOK Example compiled: {output}")
+    print(f"   Run: {output}")
 
 
 def _build_gcc(cfg, nats_dir, eip_dir, source, output):
-    """Compila con g++ (Linux)."""
+    """Build with g++ (Linux)."""
     cfg.run_command([
         "g++", "-g", "-O0",
         "-Wall", "-Wextra",
@@ -69,11 +69,11 @@ def _build_gcc(cfg, nats_dir, eip_dir, source, output):
 
 
 def _build_msvc(cfg, nats_dir, eip_dir, source, output, build_dir):
-    """Compila con CMake/MSVC (Windows)."""
-    # Crear CMakeLists.txt temporal
+    """Build with CMake/MSVC (Windows)."""
+    # Create temporary CMakeLists.txt
     cmakelists = build_dir / "CMakeLists.txt"
 
-    # Convertir paths a forward slashes para CMake
+    # Convert paths to forward slashes for CMake
     nats_inc = str(nats_dir / "src").replace("\\", "/")
     eip_inc = str(eip_dir / "src").replace("\\", "/")
     src_dir = str(cfg.src_dir).replace("\\", "/")
@@ -113,12 +113,12 @@ foreach(CONFIG_TYPE ${{CMAKE_CONFIGURATION_TYPES}})
 endforeach()
 """, encoding="utf-8")
 
-    print("\nConfigurando con CMake...")
-    # RelWithDebInfo: optimizado como Release (compatible con las DLLs Release)
-    # pero con simbolos de debug para poder debugear con breakpoints
+    print("\nConfiguring with CMake...")
+    # RelWithDebInfo: optimized like Release (compatible with Release DLLs)
+    # but with debug symbols for breakpoint debugging
     cfg.run_command(["cmake", ".", "-DCMAKE_BUILD_TYPE=RelWithDebInfo"], cwd=build_dir)
 
-    print("\nCompilando...")
+    print("\nCompiling...")
     cfg.run_command(["cmake", "--build", ".", "--config", "RelWithDebInfo"], cwd=build_dir)
 
 

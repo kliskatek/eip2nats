@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Compila el binding Python (pybind11) del bridge.
-Requiere que nats.c y EIPScanner ya esten compilados.
-Uso: python scripts/build_binding.py
+Builds the Python binding (pybind11) for the bridge.
+Requires nats.c and EIPScanner to be already compiled.
+Usage: python scripts/build_binding.py
 """
 
 import shutil
@@ -11,7 +11,7 @@ from build_config import BuildConfig, IS_WINDOWS, IS_LINUX
 
 
 def _build_binding_gcc(cfg, nats_include, eip_include, ext_suffix):
-    """Build del binding Python usando g++ directamente (Linux)."""
+    """Build the Python binding using g++ directly (Linux)."""
     import pybind11
     import sysconfig
 
@@ -46,23 +46,23 @@ def _build_binding_gcc(cfg, nats_include, eip_include, ext_suffix):
         "-Wl,-rpath,$ORIGIN/lib",
     ]
 
-    print("\nCompilando...")
+    print("\nCompiling...")
     cfg.run_command(compile_cmd)
 
-    print(f"OK Binding compilado: {output_name.name}")
+    print(f"OK Binding compiled: {output_name.name}")
 
 
 def _build_binding_cmake(cfg, nats_include, eip_include):
-    """Build del binding Python usando CMake (Windows/MSVC)."""
+    """Build the Python binding using CMake (Windows/MSVC)."""
     binding_build_dir = cfg.build_dir / "binding"
     binding_build_dir.mkdir(parents=True, exist_ok=True)
 
-    # Copiar CMakeLists.txt template al directorio de build
+    # Copy CMakeLists.txt template to the build directory
     cmake_template = cfg.root_dir / "scripts" / "binding_CMakeLists.txt"
     cmake_dest = binding_build_dir / "CMakeLists.txt"
     shutil.copy2(cmake_template, cmake_dest)
 
-    # Obtener directorio cmake de pybind11
+    # Get pybind11 cmake directory
     import pybind11
     pybind11_cmake_dir = pybind11.get_cmake_dir()
 
@@ -72,8 +72,8 @@ def _build_binding_cmake(cfg, nats_include, eip_include):
     print(f"Lib dir: {cfg.lib_dir}")
     print(f"Src dir: {cfg.src_dir}")
 
-    # Usar forward slashes para todos los paths - CMake los maneja en todas las plataformas
-    # y los backslashes causan problemas de escape en CMake EVAL
+    # Use forward slashes for all paths - CMake handles them on all platforms
+    # and backslashes cause escaping issues in CMake EVAL
     python_executable = sys.executable.replace('\\', '/')
     pybind11_cmake_dir_str = str(pybind11_cmake_dir).replace('\\', '/')
     nats_include_str = str(nats_include).replace('\\', '/')
@@ -93,41 +93,41 @@ def _build_binding_cmake(cfg, nats_include, eip_include):
         "-DCMAKE_BUILD_TYPE=Release",
     ]
 
-    print("\nConfigurando binding con CMake...")
+    print("\nConfiguring binding with CMake...")
     cfg.run_command(cmake_args, cwd=binding_build_dir)
 
-    print("\nCompilando binding...")
+    print("\nCompiling binding...")
     cfg.run_command([
         "cmake", "--build", ".", "--config", "Release"
     ], cwd=binding_build_dir)
 
-    # Verificar output
+    # Verify output
     import sysconfig
     ext_suffix = sysconfig.get_config_var('EXT_SUFFIX')
     expected_output = cfg.src_dir / f"eip_nats_bridge{ext_suffix}"
 
     if not expected_output.exists():
-        # En Windows, pybind11 puede producir el archivo con extension .pyd
+        # On Windows, pybind11 may produce the file with .pyd extension
         pyd_files = list(cfg.src_dir.glob("eip_nats_bridge*.pyd"))
         if pyd_files:
-            print(f"OK Binding compilado: {pyd_files[0].name}")
+            print(f"OK Binding compiled: {pyd_files[0].name}")
         else:
-            print("Buscando output en build dir...")
+            print("Searching for output in build dir...")
             for item in binding_build_dir.rglob("eip_nats_bridge*"):
                 print(f"  Found: {item}")
-            raise RuntimeError("No se encontro el binding compilado")
+            raise RuntimeError("Compiled binding not found")
     else:
-        print(f"OK Binding compilado: {expected_output.name}")
+        print(f"OK Binding compiled: {expected_output.name}")
 
 
 
 def build_binding(cfg=None):
-    """Compila el binding Python."""
+    """Build the Python binding."""
     if cfg is None:
         cfg = BuildConfig()
 
     print("\n" + "=" * 70)
-    print("  Compilando binding Python")
+    print("  Building Python binding")
     print("=" * 70)
 
     nats_dir = cfg.deps_dir / "nats.c"
@@ -136,12 +136,12 @@ def build_binding(cfg=None):
     nats_include = nats_dir / "src"
     eip_include = eip_dir / "src"
 
-    # Verificar que los fuentes existen
+    # Verify that source files exist
     binding_src = cfg.src_dir / "bindings.cpp"
     bridge_src = cfg.src_dir / "EIPtoNATSBridge.cpp"
 
     if not binding_src.exists() or not bridge_src.exists():
-        raise FileNotFoundError("Archivos fuente no encontrados en src/eip2nats/")
+        raise FileNotFoundError("Source files not found in src/eip2nats/")
 
     import sysconfig
     ext_suffix = sysconfig.get_config_var('EXT_SUFFIX')

@@ -1,88 +1,97 @@
 # Examples - eip2nats
 
-Ejemplos de uso del puente EIP to NATS.
+Usage examples for the EIP to NATS bridge.
 
-## 📁 Archivo
+## Files
 
 ### `example_python.py`
-Ejemplo básico y completo del uso del bridge.
+Complete example of using the bridge from Python.
 
-**Características:**
-- Configuración simple
-- Monitoreo de estadísticas cada 5 segundos
-- Manejo de señales (Ctrl+C)
-- Código limpio y comentado
+**Features:**
+- Simple configuration
+- Statistics monitoring every 5 seconds
+- Signal handling (Ctrl+C)
+- Clean, commented code
 
-**Ejecutar:**
+**Run:**
 ```bash
-source venv/bin/activate
+source venv/bin/activate    # Linux
+.\venv\Scripts\Activate     # Windows PowerShell
+
 python examples/example_python.py
 ```
 
-O con el helper:
+### `example_cpp.cpp`
+C++ example for debugging the bridge without Python.
+
+**Build and run:**
 ```bash
-./run.sh  # Ejecuta example_python.py por defecto
+python scripts/build_example_cpp.py
+build/example_cpp/example_cpp        # Linux
+build\example_cpp\example_cpp.exe    # Windows
 ```
+
+Or directly from VSCode with F5 ("C++ Example" configuration).
 
 ---
 
-## 🔧 Configuración
+## Configuration
 
-El ejemplo usa por defecto:
+The example uses by default:
 - **PLC**: `192.168.17.200`
 - **NATS**: `nats://192.168.17.138:4222`
 - **Subject**: `plc.eip.data`
-- **Formato**: Binario
+- **Format**: Binary
 
-### Cambiar IPs
+### Change IPs
 
-Edita las variables al inicio del script:
+Edit the variables at the top of the script:
 
 ```python
-plc_address = "192.168.1.100"      # Tu IP del PLC
-nats_url = "nats://localhost:4222" # Tu servidor NATS
-nats_subject = "mi.topic"          # Tu subject
+plc_address = "192.168.1.100"      # Your PLC IP
+nats_url = "nats://localhost:4222" # Your NATS server
+nats_subject = "my.topic"          # Your subject
 ```
 
-### Cambiar formato a JSON
+### Switch to JSON format
 
 ```python
-use_binary = False  # False = JSON, True = Binario
+use_binary = False  # False = JSON, True = Binary
 ```
 
 ---
 
-## 📊 Crear tu propio ejemplo
+## Create Your Own Example
 
 ```python
 import eip2nats
 import time
 
-# 1. Crear bridge
+# 1. Create bridge
 bridge = eip2nats.EIPtoNATSBridge(
     "192.168.17.200",              # PLC
     "nats://192.168.17.138:4222",  # NATS
     "plc.data"                     # Subject
 )
 
-# 2. Iniciar
+# 2. Start
 if bridge.start():
-    # 3. Hacer algo mientras corre
+    # 3. Do something while running
     time.sleep(60)
-    
-    # 4. Ver estadísticas
-    print(f"Recibidos: {bridge.get_received_count()}")
-    print(f"Publicados: {bridge.get_published_count()}")
-    
-    # 5. Detener
+
+    # 4. Check statistics
+    print(f"Received: {bridge.get_received_count()}")
+    print(f"Published: {bridge.get_published_count()}")
+
+    # 5. Stop
     bridge.stop()
 ```
 
 ---
 
-## 🎯 Casos de Uso Avanzados
+## Advanced Use Cases
 
-### Ejemplo 1: Con Flask API
+### Example 1: With Flask API
 
 ```python
 from flask import Flask, jsonify
@@ -116,25 +125,25 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
 ```
 
-### Ejemplo 2: Múltiples PLCs
+### Example 2: Multiple PLCs
 
 ```python
 import eip2nats
 import time
 
-# Crear múltiples bridges
+# Create multiple bridges
 bridges = [
     eip2nats.EIPtoNATSBridge("192.168.17.200", "nats://localhost:4222", "plc1.data"),
     eip2nats.EIPtoNATSBridge("192.168.17.201", "nats://localhost:4222", "plc2.data"),
     eip2nats.EIPtoNATSBridge("192.168.17.202", "nats://localhost:4222", "plc3.data"),
 ]
 
-# Iniciar todos
+# Start all
 for i, bridge in enumerate(bridges):
     if bridge.start():
-        print(f"✅ Bridge {i+1} iniciado")
+        print(f"Bridge {i+1} started")
 
-# Monitorear todos
+# Monitor all
 try:
     while True:
         time.sleep(5)
@@ -144,19 +153,19 @@ try:
 except KeyboardInterrupt:
     pass
 
-# Detener todos
+# Stop all
 for bridge in bridges:
     bridge.stop()
 ```
 
-### Ejemplo 3: Con Logging
+### Example 3: With Logging
 
 ```python
 import eip2nats
 import logging
 import time
 
-# Configurar logging
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -174,57 +183,56 @@ bridge = eip2nats.EIPtoNATSBridge(
     "plc.data"
 )
 
-logger.info("Iniciando bridge...")
+logger.info("Starting bridge...")
 if bridge.start():
-    logger.info("Bridge iniciado correctamente")
-    
+    logger.info("Bridge started successfully")
+
     try:
         while bridge.is_running():
             time.sleep(10)
             logger.info(f"Stats - RX: {bridge.get_received_count()}, "
                        f"TX: {bridge.get_published_count()}")
     except KeyboardInterrupt:
-        logger.info("Interrupción recibida")
+        logger.info("Interrupt received")
     finally:
         bridge.stop()
-        logger.info("Bridge detenido")
+        logger.info("Bridge stopped")
 else:
-    logger.error("Error al iniciar el bridge")
+    logger.error("Failed to start bridge")
 ```
 
 ---
 
-## 💡 Tips
+## Tips
 
-1. **Siempre usa `try/finally`** para asegurar que `bridge.stop()` se ejecute
-2. **Verifica `bridge.is_running()`** periódicamente para detectar desconexiones
-3. **Implementa reconexión automática** si el bridge se cae
-4. **Usa logging** para producción en lugar de print
-5. **Monitorea las estadísticas** para detectar problemas
-
----
-
-## 🐛 Troubleshooting
-
-### El bridge no se conecta al PLC
-
-- Verifica que el PLC esté encendido y accesible
-- Prueba hacer ping a la IP del PLC
-- Verifica la configuración del PLC (Assembly, RPI, path)
-
-### No se reciben datos
-
-- Comprueba que el PLC esté enviando datos
-- Verifica la configuración del Assembly
-- Revisa que el RPI no sea demasiado largo
-
-### No se publican datos a NATS
-
-- Verifica que el servidor NATS esté corriendo
-- Comprueba la conectividad de red
-- Revisa los logs del servidor NATS
+1. **Always use `try/finally`** to ensure `bridge.stop()` is called
+2. **Check `bridge.is_running()`** periodically to detect disconnections
+3. **Implement automatic reconnection** if the bridge goes down
+4. **Use logging** in production instead of print
+5. **Monitor statistics** to detect issues
 
 ---
 
-Para más información sobre desarrollo y debugging, consulta [`DEVELOPMENT.md`](../DEVELOPMENT.md) en la raíz del proyecto.
+## Troubleshooting
 
+### Bridge won't connect to PLC
+
+- Verify the PLC is powered on and reachable
+- Try pinging the PLC IP
+- Check PLC configuration (Assembly, RPI, path)
+
+### No data received
+
+- Check that the PLC is sending data
+- Verify the Assembly configuration
+- Check that the RPI is not too long
+
+### Data not published to NATS
+
+- Verify the NATS server is running
+- Check network connectivity
+- Review NATS server logs
+
+---
+
+For more information on development and debugging, see [`DEVELOPMENT.md`](../DEVELOPMENT.md) in the project root.

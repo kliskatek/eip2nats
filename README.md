@@ -1,81 +1,81 @@
 # eip2nats - EtherNet/IP to NATS Bridge
 
-Puente completo entre dispositivos EtherNet/IP (PLCs) y servidores NATS, **con todas las dependencias incluidas** en el wheel.
+Full bridge between EtherNet/IP devices (PLCs) and NATS servers, **with all dependencies bundled** in the wheel.
 
-## ✨ Características
+## Features
 
-- ✅ **Self-contained**: Incluye libnats y libEIPScanner compiladas
-- ✅ **Zero dependencies**: No requiere instalación de librerías del sistema
-- ✅ **Entorno virtual**: Compatible con Raspberry Pi OS (sin pip install global)
-- ✅ **Simple instalación**: Setup automático con un comando
-- ✅ **Alto rendimiento**: Bindings nativos C++ con pybind11
-- ✅ **Thread-safe**: Manejo seguro de múltiples conexiones
+- **Self-contained**: Includes compiled libnats and libEIPScanner
+- **Zero dependencies**: No system library installation required
+- **Virtual environment**: Compatible with Raspberry Pi OS (no global pip install)
+- **Simple setup**: Automatic setup with a single command
+- **High performance**: Native C++ bindings with pybind11
+- **Thread-safe**: Safe handling of multiple connections
 
-## 🚀 Instalación Rápida
+## Quick Start
 
-### Setup Completo Automático
+### Automatic Setup
 
 **Linux:**
 ```bash
 ./setup_project_linux.sh
 ```
 
-**Windows** (PowerShell, requiere Visual Studio Build Tools):
+**Windows** (PowerShell, requires Visual Studio Build Tools):
 ```powershell
 .\setup_project_windows.ps1
 ```
 
-Esto hace TODO automáticamente:
-1. Crea un entorno virtual en `venv/`
-2. Instala Hatch y pybind11
-3. Compila nats.c, EIPScanner y el binding Python
-4. Crea el wheel
-5. Instala el wheel en el venv
+This automatically:
+1. Creates a virtual environment in `venv/`
+2. Installs Hatch and pybind11
+3. Compiles nats.c, EIPScanner and the Python binding
+4. Creates the wheel
+5. Installs the wheel in the venv
 
-### Uso Posterior
+### Usage
 
 ```bash
-# Activar entorno virtual
+# Activate virtual environment
 source venv/bin/activate    # Linux
 .\venv\Scripts\Activate     # Windows PowerShell
 
-# Ejecutar ejemplo
+# Run example
 python examples/example_python.py
 
-# Desactivar cuando termines
+# Deactivate when done
 deactivate
 ```
 
-## 💻 Uso
+## Basic Usage
 
 ```python
 import eip2nats
 import time
 
-# Crear el bridge
+# Create bridge
 bridge = eip2nats.EIPtoNATSBridge(
-    "192.168.17.200",              # IP del PLC
-    "nats://192.168.17.138:4222",  # Servidor NATS
-    "plc.data"                     # Subject/topic NATS
+    "192.168.17.200",              # PLC IP address
+    "nats://192.168.17.138:4222",  # NATS server
+    "plc.data"                     # NATS subject/topic
 )
 
-# Iniciar
+# Start
 if bridge.start():
-    print("✅ Bridge corriendo!")
-    
-    # Monitorear
+    print("Bridge running!")
+
+    # Monitor
     while bridge.is_running():
         time.sleep(5)
-        print(f"📊 RX={bridge.get_received_count()}, "
+        print(f"RX={bridge.get_received_count()}, "
               f"TX={bridge.get_published_count()}")
-    
-    # Detener
+
+    # Stop
     bridge.stop()
 ```
 
-**Ver más ejemplos en [`examples/`](examples/README.md)**
+**More examples in [`examples/`](examples/README.md)**
 
-## 📋 Requisitos
+## Requirements
 
 **Linux:**
 - Python 3.7+
@@ -86,135 +86,135 @@ if bridge.start():
 - git, cmake
 - Visual Studio Build Tools (cl.exe)
 
-## 🛠️ Desarrollo
+## Development
 
-### Modificar Código C++
+### Modifying C++ Code
 
-Para desarrollo iterativo sin regenerar el wheel:
+For iterative development without regenerating the wheel:
 
 ```bash
-# 1. Editar código
+# 1. Edit code
 nano src/eip2nats/EIPtoNATSBridge.cpp
 
-# 2. Opción A: Ejemplo C++ (recomendado para debugging)
+# 2. Option A: C++ example (recommended for debugging)
 python scripts/build_example_cpp.py
 build/example_cpp/example_cpp        # Linux
 build\example_cpp\example_cpp.exe    # Windows
 
-# 3. Opción B: Compilar binding Python (test de integración)
+# 3. Option B: Compile Python binding (integration test)
 python scripts/build_binding.py
 python examples/example_python.py
 ```
 
-**Ver guía completa:** [`DEVELOPMENT.md`](DEVELOPMENT.md)
+**Full guide:** [`DEVELOPMENT.md`](DEVELOPMENT.md)
 
-**Incluye:**
-- Workflow de desarrollo iterativo
-- Debugging con VSCode (recomendado) y GDB
-- Detección de memory leaks con Valgrind
-- Testing C++ bridge vs Python binding
-- Cuándo usar cada enfoque
+**Includes:**
+- Iterative development workflow
+- Debugging with VSCode (recommended) and GDB
+- Memory leak detection with Valgrind
+- C++ bridge vs Python binding testing
+- When to use each approach
 
-### Crear Release
+### Create Release
 
 ```bash
-# Cuando estés satisfecho con los cambios
 hatch build
 ```
 
-### Compilación manual (sin setup script)
+### Manual Build (without setup script)
 
 ```bash
 git clone https://github.com/kliskatek/eip2nats.git
 cd eip2nats
 pip install hatch pybind11
 
-# Compilar dependencias
+# Build dependencies
 python scripts/build_nats.py
 python scripts/build_eipscanner.py
 python scripts/build_binding.py
 
-# Crear wheel
+# Create wheel
 hatch build
 ```
 
-## 📦 Estructura del Proyecto
+## Project Structure
 
 ```
 eip2nats/
-├── pyproject.toml                # Configuración Hatch
-├── hatch_build.py                # Hook para wheel platform-specific
+├── pyproject.toml                # Hatch configuration
+├── hatch_build.py                # Hook for platform-specific wheel
 ├── README.md
+├── DEVELOPMENT.md                # VSCode development guide
 ├── LICENSE                       # MIT
-├── THIRD_PARTY_LICENSES          # Licencias de nats.c y EIPScanner
-├── setup_project_linux.sh        # Setup automático Linux
-├── setup_project_windows.ps1     # Setup automático Windows
+├── THIRD_PARTY_LICENSES          # nats.c and EIPScanner licenses
+├── setup_project_linux.sh        # Automatic setup (Linux)
+├── setup_project_windows.ps1     # Automatic setup (Windows)
 ├── src/
 │   └── eip2nats/
-│       ├── __init__.py           # Package Python
-│       ├── bindings.cpp          # Bindings pybind11
-│       ├── EIPtoNATSBridge.h     # Header C++
-│       ├── EIPtoNATSBridge.cpp   # Implementación C++
-│       └── lib/                  # Librerías compiladas (auto-generado)
+│       ├── __init__.py           # Python package
+│       ├── bindings.cpp          # pybind11 bindings
+│       ├── EIPtoNATSBridge.h     # C++ header
+│       ├── EIPtoNATSBridge.cpp   # C++ implementation
+│       └── lib/                  # Compiled libraries (auto-generated)
 │           ├── libnats.so / nats.dll
 │           └── libEIPScanner.so / EIPScanner.dll
 ├── scripts/
-│   ├── build_config.py           # Configuración compartida
-│   ├── build_nats.py             # Compila nats.c
-│   ├── build_eipscanner.py       # Compila EIPScanner
-│   ├── build_binding.py          # Compila binding Python (.pyd/.so)
-│   ├── build_example_cpp.py      # Compila ejemplo C++
-│   └── binding_CMakeLists.txt    # CMake template para binding (Windows)
+│   ├── build_config.py           # Shared build configuration
+│   ├── build_nats.py             # Builds nats.c
+│   ├── build_eipscanner.py       # Builds EIPScanner
+│   ├── build_binding.py          # Builds Python binding (.pyd/.so)
+│   ├── build_example_cpp.py      # Builds C++ example
+│   └── binding_CMakeLists.txt    # CMake template for binding (Windows)
 ├── examples/
-│   ├── example_python.py         # Ejemplo Python
-│   └── example_cpp.cpp           # Ejemplo C++ (debugging)
+│   ├── example_python.py         # Python example
+│   └── example_cpp.cpp           # C++ example (debugging)
 ├── tests/
-│   └── test_python.py            # Tests unitarios Python
-└── build/                        # Auto-generado, en .gitignore
-    ├── dependencies/             # Clones de nats.c y EIPScanner
-    └── example_cpp/              # Ejecutable C++ compilado
+│   └── test_python.py            # Python unit tests
+└── build/                        # Auto-generated, in .gitignore
+    ├── dependencies/             # nats.c and EIPScanner clones
+    └── example_cpp/              # Compiled C++ executable
 ```
 
-## 🔧 Cómo Funciona
+## How It Works
 
-1. **Scripts de compilación** (`scripts/`):
-   - `build_nats.py`: Clona y compila nats.c → `libnats.so` / `nats.dll`
-   - `build_eipscanner.py`: Clona y compila EIPScanner → `libEIPScanner.so` / `EIPScanner.dll`
-   - `build_binding.py`: Compila el binding Python → `.so` (Linux) / `.pyd` (Windows)
-   - Todos copian los binarios a `src/eip2nats/lib/`
+1. **Build scripts** (`scripts/`):
+   - `build_nats.py`: Clones and compiles nats.c -> `libnats.so` / `nats.dll`
+   - `build_eipscanner.py`: Clones and compiles EIPScanner -> `libEIPScanner.so` / `EIPScanner.dll`
+   - `build_binding.py`: Compiles the Python binding -> `.so` (Linux) / `.pyd` (Windows)
+   - All copy binaries to `src/eip2nats/lib/`
 
 2. **`hatch build`**:
-   - Empaqueta `src/eip2nats/` completo (código + binarios)
-   - `hatch_build.py` fuerza tags platform-specific en el wheel
-   - Linux: RPATH relativo (`$ORIGIN`), Windows: `os.add_dll_directory()`
-   - El wheel contiene todo lo necesario
+   - Packages the full `src/eip2nats/` (code + binaries)
+   - `hatch_build.py` forces platform-specific wheel tags
+   - Linux: relative RPATH (`$ORIGIN`), Windows: `os.add_dll_directory()`
+   - The wheel contains everything needed
 
 3. **`pip install`**:
-   - Instala el wheel
-   - Los binarios quedan en el site-packages
-   - Python carga las librerías automáticamente
-   - ¡Funciona sin dependencias del sistema!
+   - Installs the wheel
+   - Binaries end up in site-packages
+   - Python loads libraries automatically
+   - Works without system dependencies!
 
-## 🎯 Ventajas de Este Enfoque
+## Advantages
 
-### ✅ Comparado con librerías del sistema:
-- No requiere `sudo apt-get install`
-- No hay conflictos de versiones
-- Portabilidad entre sistemas
+### vs System Libraries:
+- No `sudo apt-get install` required
+- No version conflicts
+- Portable across systems
 
-### ✅ Comparado con wheels normales:
-- Incluye todas las dependencias C/C++
-- Un solo archivo para instalar
-- Funciona en sistemas sin compiladores
+### vs Regular Wheels:
+- Includes all C/C++ dependencies
+- Single file to install
+- Works on systems without compilers
 
-### ✅ Comparado con Docker:
-- Más ligero (MBs vs GBs)
-- Integración directa con Python
-- No requiere privilegios de Docker
+### vs Docker:
+- Lighter (MBs vs GBs)
+- Direct Python integration
+- No Docker privileges required
 
-## 📊 API Reference
+## API Reference
 
-### Clase: `EIPtoNATSBridge`
+### Class: `EIPtoNATSBridge`
 
 ```python
 bridge = eip2nats.EIPtoNATSBridge(
@@ -225,26 +225,26 @@ bridge = eip2nats.EIPtoNATSBridge(
 )
 ```
 
-**Métodos:**
-- `start() -> bool`: Inicia el bridge
-- `stop() -> None`: Detiene el bridge
-- `is_running() -> bool`: Estado del bridge
-- `get_received_count() -> int`: Mensajes del PLC
-- `get_published_count() -> int`: Mensajes a NATS
+**Methods:**
+- `start() -> bool`: Starts the bridge
+- `stop() -> None`: Stops the bridge
+- `is_running() -> bool`: Bridge status
+- `get_received_count() -> int`: Messages from PLC
+- `get_published_count() -> int`: Messages to NATS
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Error: "cannot open shared object file"
 
-Aunque el wheel incluye las librerías, verifica RPATH:
+Even though the wheel includes the libraries, check RPATH:
 
 ```bash
 ldd $(python -c "import eip2nats; print(eip2nats.__file__.replace('__init__.py', 'lib/eip2nats.*.so'))")
 ```
 
-Todas las dependencias deberían resolverse localmente.
+All dependencies should resolve locally.
 
-### Recompilar en otro sistema
+### Rebuild on Another System
 
 ```bash
 git clone <repo>
@@ -255,39 +255,35 @@ python scripts/build_binding.py
 hatch build
 ```
 
-### Limpiar builds
+### Clean Builds
 
 ```bash
 rm -rf build/ dist/ src/eip2nats/lib/
 ```
 
-## 📝 Changelog
+## Changelog
 
 ### v1.0.0 (2025)
 - Initial release
-- Self-contained wheel con nats.c y EIPScanner
-- Soporte Windows (MSVC) y Linux (GCC)
-- Soporte para formato binario y JSON
+- Self-contained wheel with nats.c and EIPScanner
+- Windows (MSVC) and Linux (GCC) support
+- Binary and JSON format support
 - Thread-safe operations
 
-## 🤝 Contribuir
+## Contributing
 
-1. Fork el proyecto
-2. Crea una rama (`git checkout -b feature/amazing`)
-3. Commit cambios (`git commit -m 'Add amazing feature'`)
+1. Fork the project
+2. Create a branch (`git checkout -b feature/amazing`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
 4. Push (`git push origin feature/amazing`)
-5. Abre un Pull Request
+5. Open a Pull Request
 
-## 📄 Licencia
+## License
 
-MIT License - ver LICENSE file
+MIT License - see LICENSE file
 
-## 🙏 Créditos
+## Credits
 
-- [nats.c](https://github.com/nats-io/nats.c) - Cliente NATS para C
-- [EIPScanner](https://github.com/nimbuscontrols/EIPScanner) - Librería EtherNet/IP
+- [nats.c](https://github.com/nats-io/nats.c) - NATS C Client
+- [EIPScanner](https://github.com/nimbuscontrols/EIPScanner) - EtherNet/IP Library
 - [pybind11](https://github.com/pybind/pybind11) - Python bindings
-
----
-
-**Hecho con ❤️ para facilitar la integración industrial**
