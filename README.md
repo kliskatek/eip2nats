@@ -11,9 +11,17 @@ Full bridge between EtherNet/IP devices (PLCs) and NATS servers, **with all depe
 - **High performance**: Native C++ bindings with pybind11
 - **Thread-safe**: Safe handling of multiple connections
 
-## Quick Start
+## Installation
 
-### Automatic Setup
+```bash
+pip install eip2nats
+```
+
+Pre-built wheels are available on [PyPI](https://pypi.org/project/eip2nats/) for Linux and Windows.
+
+### Building from Source
+
+If a pre-built wheel is not available for your platform, you can build from source:
 
 **Linux:**
 ```bash
@@ -88,32 +96,7 @@ if bridge.start():
 
 ## Development
 
-### Modifying C++ Code
-
-For iterative development without regenerating the wheel:
-
-```bash
-# 1. Edit code
-nano src/eip2nats/EIPtoNATSBridge.cpp
-
-# 2. Option A: C++ example (recommended for debugging)
-python scripts/build_example_cpp.py
-build/example_cpp/example_cpp        # Linux
-build\example_cpp\example_cpp.exe    # Windows
-
-# 3. Option B: Compile Python binding (integration test)
-python scripts/build_binding.py
-python examples/example_python.py
-```
-
-**Full guide:** [`DEVELOPMENT.md`](DEVELOPMENT.md)
-
-**Includes:**
-- Iterative development workflow
-- Debugging with VSCode (recommended) and GDB
-- Memory leak detection with Valgrind
-- C++ bridge vs Python binding testing
-- When to use each approach
+See [`DEVELOPMENT.md`](DEVELOPMENT.md) for the full development guide (VSCode setup, debugging, workflows).
 
 ### Create Release
 
