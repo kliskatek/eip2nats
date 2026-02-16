@@ -25,6 +25,11 @@ target_include_directories(eip_nats_bridge PRIVATE
     ${SRC_DIR}
 )
 
+# Version from pyproject.toml (passed via -DEIP2NATS_VERSION=x.y.z)
+if(DEFINED EIP2NATS_VERSION)
+    target_compile_definitions(eip_nats_bridge PRIVATE EIP2NATS_VERSION="${EIP2NATS_VERSION}")
+endif()
+
 # Link against pre-built libraries
 if(WIN32)
     # Windows: link against .lib import libraries

@@ -31,6 +31,7 @@ def _build_binding_gcc(cfg, nats_include, eip_include, ext_suffix):
         "-shared",
         "-std=c++17",
         "-fPIC",
+        f"-DEIP2NATS_VERSION=\"{cfg.version}\"",
         f"-I{pybind_include}",
         f"-I{nats_include}",
         f"-I{eip_include}",
@@ -90,6 +91,7 @@ def _build_binding_cmake(cfg, nats_include, eip_include):
         f"-DLIB_DIR={lib_dir_str}",
         f"-DPython_EXECUTABLE={python_executable}",
         f"-DPython3_EXECUTABLE={python_executable}",
+        f"-DEIP2NATS_VERSION={cfg.version}",
         "-DCMAKE_BUILD_TYPE=Release",
     ]
 

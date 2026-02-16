@@ -15,11 +15,22 @@ IS_WINDOWS = sys.platform == "win32"
 IS_LINUX = sys.platform.startswith("linux")
 
 
+def get_project_version():
+    """Read the project version from pyproject.toml."""
+    pyproject = Path.cwd() / "pyproject.toml"
+    with open(pyproject) as f:
+        for line in f:
+            if line.strip().startswith("version"):
+                return line.split("=")[1].strip().strip('"').strip("'")
+    raise RuntimeError("Version not found in pyproject.toml")
+
+
 class BuildConfig:
     """Common paths and utilities for all build scripts."""
 
     def __init__(self):
         self.root_dir = Path.cwd()
+        self.version = get_project_version()
         self.build_dir = self.root_dir / "build"
         self.deps_dir = self.build_dir / "dependencies"
         self.lib_dir = self.root_dir / "src" / "eip2nats" / "lib"

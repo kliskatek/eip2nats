@@ -53,5 +53,10 @@ try:
 except ImportError as e:
     raise ImportError(f"Error loading eip2nats module: {e}")
 
-__version__ = "1.0.2"
+from importlib.metadata import version as _get_version, PackageNotFoundError
+try:
+    __version__ = _get_version("eip2nats")
+except PackageNotFoundError:
+    __version__ = "0.0.0"  # Not installed as a package (dev mode)
+
 __all__ = ["EIPtoNATSBridge", "devices"]

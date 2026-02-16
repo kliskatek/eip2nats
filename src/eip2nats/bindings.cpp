@@ -4,6 +4,10 @@
 
 namespace py = pybind11;
 
+#ifndef EIP2NATS_VERSION
+#define EIP2NATS_VERSION "0.0.0"
+#endif
+
 PYBIND11_MODULE(eip_nats_bridge, m) {
     m.doc() = "EIP to NATS Bridge - Bridge between EtherNet/IP and NATS";
 
@@ -77,6 +81,6 @@ PYBIND11_MODULE(eip_nats_bridge, m) {
              [](py::object) { return bridge::devices::RM75E::T2O_ASSEMBLY; });
 
     // Module information
-    m.attr("__version__") = "1.0.2";
+    m.attr("__version__") = EIP2NATS_VERSION;
     m.attr("__author__") = "Ibon Zalbide";
 }

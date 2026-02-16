@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "eip2nats"
-version = "1.0.2"
+version = "1.0.0"
 description = "EtherNet/IP to NATS Bridge with bundled dependencies"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -12,6 +12,7 @@ license = "MIT"
 license-files = ["LICENSE", "THIRD_PARTY_LICENSES"]
 authors = [
     {name = "Ibon Zalbide", email = "ibon.zalbide@kliskatek.com"},
+    {name = "Aritz Alonso", email = "aritz.alonso@kliskatek.com"},
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
