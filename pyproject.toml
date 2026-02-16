@@ -59,6 +59,38 @@ artifacts = [
 [tool.hatch.build.targets.wheel.hooks.custom]
 # Uses hatch_build.py to force platform-specific wheel tags
 
+[tool.cibuildwheel]
+build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
+skip = "*-musllinux*"
+
+# Build nats.c + EIPScanner once per platform (shared across Python versions)
+before-all = [
+    "pip install pybind11",
+    "python scripts/build_nats.py",
+    "python scripts/build_eipscanner.py",
+]
+
+# Build the pybind11 binding for each Python version
+before-build = [
+    "pip install pybind11",
+    "python scripts/build_binding.py",
+]
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64", "aarch64"]
+# manylinux2014 image includes gcc, cmake, git, openssl-dev
+manylinux-x86_64-image = "manylinux2014"
+manylinux-aarch64-image = "manylinux2014"
+before-all = [
+    "rm -rf build/",
+    "pip install pybind11",
+    "python scripts/build_nats.py",
+    "python scripts/build_eipscanner.py",
+]
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64"]
+
 [tool.black]
 line-length = 100
 target-version = ['py37']

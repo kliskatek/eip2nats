@@ -46,9 +46,9 @@ def build_nats(cfg=None):
         "-DCMAKE_POSITION_INDEPENDENT_CODE=ON",
     ]
 
-    if IS_WINDOWS:
-        # Disable TLS to avoid OpenSSL dependency on Windows
-        cmake_args.append("-DNATS_BUILD_WITH_TLS=OFF")
+    # Disable TLS - not needed for EIP/NATS bridge on local networks
+    # Also avoids OpenSSL version issues on manylinux2014 and Windows
+    cmake_args.append("-DNATS_BUILD_WITH_TLS=OFF")
 
     print("\nConfiguring nats.c with CMake...")
     cfg.run_command(cmake_args, cwd=nats_build_dir)
