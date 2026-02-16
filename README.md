@@ -1,14 +1,17 @@
 # eip2nats - EtherNet/IP to NATS Bridge
 
-Full bridge between EtherNet/IP devices (PLCs) and NATS servers, **with all dependencies bundled** in the wheel.
+Read-only bridge that opens an EtherNet/IP **implicit (I/O) connection** to a PLC, captures the T2O (Target-to-Originator) data stream and publishes every packet to a NATS subject. It does **not** write data to the PLC — it acts as a passive listener, similar to a sniffer.
+
+All dependencies (libnats, libEIPScanner) are **bundled** in the wheel.
 
 ## Features
 
+- **Read-only**: Captures PLC I/O data via implicit connection, no writes
 - **Self-contained**: Includes compiled libnats and libEIPScanner
 - **Zero dependencies**: No system library installation required
-- **Virtual environment**: Compatible with Raspberry Pi OS (no global pip install)
-- **Simple setup**: Automatic setup with a single command
+- **Device presets**: Built-in assembly constants for known devices (RM75E, etc.)
 - **High performance**: Native C++ bindings with pybind11
+- **Auto-reconnect**: Recovers automatically from connection loss
 - **Thread-safe**: Safe handling of multiple connections
 
 ## Installation
