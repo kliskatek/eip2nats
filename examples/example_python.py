@@ -39,13 +39,17 @@ def main():
     print(f"   Subject: {nats_subject}")
     print()
 
-    # Create bridge
+    # Create bridge (using RM75E device presets)
     print("Creating bridge...")
     bridge = eip2nats.EIPtoNATSBridge(
         plc_address,
         nats_url,
         nats_subject,
-        True  # True = binary, False = JSON
+        use_binary_format=True,
+        config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
+        o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
+        t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
+        t2o_size=100,
     )
 
     print(f"   {bridge}")

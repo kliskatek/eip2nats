@@ -8,27 +8,25 @@ PYBIND11_MODULE(eip_nats_bridge, m) {
     m.doc() = "EIP to NATS Bridge - Bridge between EtherNet/IP and NATS";
 
     py::class_<bridge::EIPtoNATSBridge>(m, "EIPtoNATSBridge")
-        .def(py::init<const std::string&, const std::string&, const std::string&>(),
+        .def(py::init<const std::string&, const std::string&, const std::string&, bool, uint8_t, uint8_t, uint8_t, uint16_t>(),
              py::arg("plc_address"),
              py::arg("nats_url"),
              py::arg("nats_subject"),
+             py::arg("use_binary_format") = true,
+             py::arg("config_assembly") = bridge::devices::RM75E::CONFIG_ASSEMBLY,
+             py::arg("o2t_assembly") = bridge::devices::RM75E::O2T_ASSEMBLY,
+             py::arg("t2o_assembly") = bridge::devices::RM75E::T2O_ASSEMBLY,
+             py::arg("t2o_size") = 0,
              "Bridge constructor\n\n"
              "Args:\n"
              "    plc_address (str): PLC IP address (e.g. '192.168.17.200')\n"
              "    nats_url (str): NATS server URL (e.g. 'nats://192.168.17.138:4222')\n"
-             "    nats_subject (str): NATS subject/topic (e.g. 'plc.data')")
-
-        .def(py::init<const std::string&, const std::string&, const std::string&, bool>(),
-             py::arg("plc_address"),
-             py::arg("nats_url"),
-             py::arg("nats_subject"),
-             py::arg("use_binary_format"),
-             "Bridge constructor with custom format\n\n"
-             "Args:\n"
-             "    plc_address (str): PLC IP address\n"
-             "    nats_url (str): NATS server URL\n"
-             "    nats_subject (str): NATS subject/topic\n"
-             "    use_binary_format (bool): True for binary, False for JSON")
+             "    nats_subject (str): NATS subject/topic (e.g. 'plc.data')\n"
+             "    use_binary_format (bool): True for binary, False for JSON (default: True)\n"
+             "    config_assembly (int): Configuration assembly instance (default: 4)\n"
+             "    o2t_assembly (int): O2T data assembly instance (default: 2)\n"
+             "    t2o_assembly (int): T2O data assembly instance (default: 1)\n"
+             "    t2o_size (int): T2O connection size in bytes (default: 100)")
 
         .def("start", &bridge::EIPtoNATSBridge::start,
              "Start the bridge: connect to NATS, open EIP connection and start the thread\n\n"
@@ -65,6 +63,18 @@ PYBIND11_MODULE(eip_nats_bridge, m) {
                    " published=" + std::to_string(bridge.getPublishedCount()) +
                    " reconnects=" + std::to_string(bridge.getReconnectCount()) + ">";
         });
+
+    // Device presets (eip2nats.devices.RM75E)
+    auto devices = m.def_submodule("devices", "Assembly presets for known EIP devices");
+
+    py::class_<bridge::devices::RM75E>(devices, "RM75E",
+             "Assembly presets for the RM75E device")
+        .def_property_readonly_static("CONFIG_ASSEMBLY",
+             [](py::object) { return bridge::devices::RM75E::CONFIG_ASSEMBLY; })
+        .def_property_readonly_static("O2T_ASSEMBLY",
+             [](py::object) { return bridge::devices::RM75E::O2T_ASSEMBLY; })
+        .def_property_readonly_static("T2O_ASSEMBLY",
+             [](py::object) { return bridge::devices::RM75E::T2O_ASSEMBLY; });
 
     // Module information
     m.attr("__version__") = "1.0.2";

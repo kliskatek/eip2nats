@@ -14,11 +14,19 @@ using namespace eipScanner::utils;
 EIPtoNATSBridge::EIPtoNATSBridge(const std::string& plcAddress,
                                  const std::string& natsUrl,
                                  const std::string& natsSubject,
-                                 bool useBinaryFormat)
+                                 bool useBinaryFormat,
+                                 uint8_t configAssembly,
+                                 uint8_t o2tAssembly,
+                                 uint8_t t2oAssembly,
+                                 uint16_t t2oSize)
     : plcAddress_(plcAddress)
     , natsUrl_(natsUrl)
     , natsSubject_(natsSubject)
     , useBinaryFormat_(useBinaryFormat)
+    , configAssembly_(configAssembly)
+    , o2tAssembly_(o2tAssembly)
+    , t2oAssembly_(t2oAssembly)
+    , t2oSize_(t2oSize)
     , natsConn_(nullptr)
     , natsOpts_(nullptr)
     , connectionManager_(nullptr)
@@ -32,7 +40,11 @@ EIPtoNATSBridge::EIPtoNATSBridge(const std::string& plcAddress,
     Logger(LogLevel::INFO) << "EIPtoNATSBridge created - PLC: " << plcAddress
                            << " NATS: " << natsUrl
                            << " Subject: " << natsSubject
-                           << " Format: " << (useBinaryFormat ? "Binary" : "JSON");
+                           << " Format: " << (useBinaryFormat ? "Binary" : "JSON")
+                           << " Assemblies: config=" << (int)configAssembly
+                           << " o2t=" << (int)o2tAssembly
+                           << " t2o=" << (int)t2oAssembly
+                           << " t2oSize=" << t2oSize;
 }
 
 EIPtoNATSBridge::~EIPtoNATSBridge() {
@@ -171,14 +183,14 @@ bool EIPtoNATSBridge::initEIP() {
 
         // Configure connection parameters
         ConnectionParameters parameters;
-        parameters.connectionPath = {0x20, 0x04, 0x24, 4, 0x2C, 2, 0x2C, 1};
+        parameters.connectionPath = {0x20, 0x04, 0x24, configAssembly_, 0x2C, o2tAssembly_, 0x2C, t2oAssembly_};
         parameters.o2tRealTimeFormat = true;
         parameters.originatorVendorId = 342;
         parameters.originatorSerialNumber = 0x12345;
 
         parameters.t2oNetworkConnectionParams |= NetworkConnectionParams::P2P;
         parameters.t2oNetworkConnectionParams |= NetworkConnectionParams::SCHEDULED_PRIORITY;
-        parameters.t2oNetworkConnectionParams |= 100;
+        parameters.t2oNetworkConnectionParams |= t2oSize_;
 
         parameters.o2tNetworkConnectionParams |= NetworkConnectionParams::P2P;
         parameters.o2tNetworkConnectionParams |= NetworkConnectionParams::SCHEDULED_PRIORITY;

@@ -67,11 +67,15 @@ use_binary = False  # False = JSON, True = Binary
 import eip2nats
 import time
 
-# 1. Create bridge
+# 1. Create bridge (using device presets + application-specific t2o_size)
 bridge = eip2nats.EIPtoNATSBridge(
     "192.168.17.200",              # PLC
     "nats://192.168.17.138:4222",  # NATS
-    "plc.data"                     # Subject
+    "plc.data",                    # Subject
+    config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
+    o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
+    t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
+    t2o_size=100,                  # Application-specific
 )
 
 # 2. Start
@@ -82,6 +86,7 @@ if bridge.start():
     # 4. Check statistics
     print(f"Received: {bridge.get_received_count()}")
     print(f"Published: {bridge.get_published_count()}")
+    print(f"Reconnections: {bridge.get_reconnect_count()}")
 
     # 5. Stop
     bridge.stop()
@@ -101,7 +106,11 @@ app = Flask(__name__)
 bridge = eip2nats.EIPtoNATSBridge(
     "192.168.17.200",
     "nats://192.168.17.138:4222",
-    "plc.data"
+    "plc.data",
+    config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
+    o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
+    t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
+    t2o_size=100,
 )
 
 @app.route('/start')
@@ -133,9 +142,21 @@ import time
 
 # Create multiple bridges
 bridges = [
-    eip2nats.EIPtoNATSBridge("192.168.17.200", "nats://localhost:4222", "plc1.data"),
-    eip2nats.EIPtoNATSBridge("192.168.17.201", "nats://localhost:4222", "plc2.data"),
-    eip2nats.EIPtoNATSBridge("192.168.17.202", "nats://localhost:4222", "plc3.data"),
+    eip2nats.EIPtoNATSBridge("192.168.17.200", "nats://localhost:4222", "plc1.data",
+                             config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
+                             o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
+                             t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
+                             t2o_size=100),
+    eip2nats.EIPtoNATSBridge("192.168.17.201", "nats://localhost:4222", "plc2.data",
+                             config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
+                             o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
+                             t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
+                             t2o_size=100),
+    eip2nats.EIPtoNATSBridge("192.168.17.202", "nats://localhost:4222", "plc3.data",
+                             config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
+                             o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
+                             t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
+                             t2o_size=100),
 ]
 
 # Start all
@@ -180,7 +201,11 @@ logger = logging.getLogger(__name__)
 bridge = eip2nats.EIPtoNATSBridge(
     "192.168.17.200",
     "nats://192.168.17.138:4222",
-    "plc.data"
+    "plc.data",
+    config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
+    o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
+    t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
+    t2o_size=100,
 )
 
 logger.info("Starting bridge...")

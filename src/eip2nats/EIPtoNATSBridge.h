@@ -14,6 +14,17 @@
 
 namespace bridge {
 
+/// Assembly presets for known EIP devices
+namespace devices {
+
+struct RM75E {
+    static constexpr uint8_t CONFIG_ASSEMBLY = 4;
+    static constexpr uint8_t O2T_ASSEMBLY    = 2;
+    static constexpr uint8_t T2O_ASSEMBLY    = 1;
+};
+
+} // namespace devices
+
 /**
  * @brief Bridge between EtherNet/IP (using EIPScanner) and NATS
  *
@@ -32,7 +43,11 @@ public:
     EIPtoNATSBridge(const std::string& plcAddress,
                     const std::string& natsUrl,
                     const std::string& natsSubject,
-                    bool useBinaryFormat = true);
+                    bool useBinaryFormat = true,
+                    uint8_t configAssembly = devices::RM75E::CONFIG_ASSEMBLY,
+                    uint8_t o2tAssembly = devices::RM75E::O2T_ASSEMBLY,
+                    uint8_t t2oAssembly = devices::RM75E::T2O_ASSEMBLY,
+                    uint16_t t2oSize = 0);
 
     /**
      * @brief Destructor - ensures everything is cleanly closed
@@ -80,6 +95,10 @@ private:
     std::string natsUrl_;
     std::string natsSubject_;
     bool useBinaryFormat_;
+    uint8_t configAssembly_;
+    uint8_t o2tAssembly_;
+    uint8_t t2oAssembly_;
+    uint16_t t2oSize_;
 
     // NATS
     natsConnection* natsConn_;

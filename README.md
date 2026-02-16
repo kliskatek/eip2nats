@@ -58,17 +58,21 @@ deactivate
 
 ```python
 import eip2nats
-import time
 
-# Create bridge
+# Create bridge (using RM75E device presets)
 bridge = eip2nats.EIPtoNATSBridge(
     "192.168.17.200",              # PLC IP address
     "nats://192.168.17.138:4222",  # NATS server
-    "plc.data"                     # NATS subject/topic
+    "plc.data",                    # NATS subject/topic
+    config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
+    o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
+    t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
+    t2o_size=100,
 )
 
 # Start
 if bridge.start():
+    import time
     print("Bridge running!")
 
     # Monitor
@@ -204,7 +208,11 @@ bridge = eip2nats.EIPtoNATSBridge(
     plc_address: str,
     nats_url: str,
     nats_subject: str,
-    use_binary_format: bool = True
+    use_binary_format: bool = True,
+    config_assembly: int = 4,       # Configuration assembly instance
+    o2t_assembly: int = 2,          # O2T data assembly instance
+    t2o_assembly: int = 1,          # T2O data assembly instance
+    t2o_size: int = 0,              # T2O connection size in bytes
 )
 ```
 
@@ -214,6 +222,17 @@ bridge = eip2nats.EIPtoNATSBridge(
 - `is_running() -> bool`: Bridge status
 - `get_received_count() -> int`: Messages from PLC
 - `get_published_count() -> int`: Messages to NATS
+- `get_reconnect_count() -> int`: Automatic EIP reconnections
+
+### Device Presets: `eip2nats.devices`
+
+Pre-defined assembly constants for known EIP devices:
+
+```python
+eip2nats.devices.RM75E.CONFIG_ASSEMBLY  # 4
+eip2nats.devices.RM75E.O2T_ASSEMBLY     # 2
+eip2nats.devices.RM75E.T2O_ASSEMBLY     # 1
+```
 
 ## Troubleshooting
 

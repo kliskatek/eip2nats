@@ -45,9 +45,14 @@ int main(int argc, char** argv) {
     std::cout << std::endl;
 
     try {
-        // Create bridge
+        // Create bridge (using RM75E device presets)
         std::cout << "Creating bridge..." << std::endl;
-        EIPtoNATSBridge bridge(plc_address, nats_url, nats_subject, use_binary);
+        EIPtoNATSBridge bridge(plc_address, nats_url, nats_subject, use_binary,
+                               devices::RM75E::CONFIG_ASSEMBLY,
+                               devices::RM75E::O2T_ASSEMBLY,
+                               devices::RM75E::T2O_ASSEMBLY,
+                               100  // t2o_size: application-specific
+        );
 
         // USEFUL BREAKPOINT HERE
         // You can inspect the bridge before starting

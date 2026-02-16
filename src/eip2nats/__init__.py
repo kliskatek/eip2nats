@@ -40,6 +40,7 @@ try:
                     module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(module)
                     EIPtoNATSBridge = module.EIPtoNATSBridge
+                    devices = module.devices
                     _found = True
                     break
         if _found:
@@ -53,4 +54,4 @@ except ImportError as e:
     raise ImportError(f"Error loading eip2nats module: {e}")
 
 __version__ = "1.0.2"
-__all__ = ["EIPtoNATSBridge"]
+__all__ = ["EIPtoNATSBridge", "devices"]
