@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "eip2nats"
-version = "1.0.0"
+version = "1.1.0"
 description = "Read-only EtherNet/IP implicit connection bridge that captures PLC I/O data and publishes it to NATS"
 readme = "README.md"
 requires-python = ">=3.7"

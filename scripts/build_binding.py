@@ -56,6 +56,9 @@ def _build_binding_gcc(cfg, nats_include, eip_include, ext_suffix):
 def _build_binding_cmake(cfg, nats_include, eip_include):
     """Build the Python binding using CMake (Windows/MSVC)."""
     binding_build_dir = cfg.build_dir / "binding"
+    # Clean cmake cache to avoid stale Python interpreter paths
+    if binding_build_dir.exists():
+        shutil.rmtree(binding_build_dir)
     binding_build_dir.mkdir(parents=True, exist_ok=True)
 
     # Copy CMakeLists.txt template to the build directory
@@ -144,6 +147,13 @@ def build_binding(cfg=None):
 
     if not binding_src.exists() or not bridge_src.exists():
         raise FileNotFoundError("Source files not found in src/eip2nats/")
+
+    # Remove any previously compiled binding (avoids Python version mismatch
+    # when cibuildwheel reuses the same tree for multiple Python versions)
+    for old in cfg.src_dir.glob("eip_nats_bridge*"):
+        if old.suffix in (".so", ".pyd") or ".cpython-" in old.name:
+            print(f"  Removing old binding: {old.name}")
+            old.unlink()
 
     import sysconfig
     ext_suffix = sysconfig.get_config_var('EXT_SUFFIX')
