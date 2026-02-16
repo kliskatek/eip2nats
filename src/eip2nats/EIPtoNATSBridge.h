@@ -68,6 +68,12 @@ public:
      */
     uint64_t getReceivedCount() const;
 
+    /**
+     * @brief Get the number of automatic reconnections
+     * @return Count of successful EIP reconnections
+     */
+    uint64_t getReconnectCount() const;
+
 private:
     // Configuration
     std::string plcAddress_;
@@ -93,6 +99,11 @@ private:
     // Statistics
     std::atomic<uint64_t> publishedCount_;
     std::atomic<uint64_t> receivedCount_;
+
+    // Reconnection
+    std::atomic<bool> needsReconnect_;
+    std::atomic<uint64_t> reconnectCount_;
+    static constexpr int kReconnectDelayMs = 3000;
 
     /**
      * @brief Main worker thread function

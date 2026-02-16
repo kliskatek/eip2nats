@@ -94,7 +94,8 @@ int main(int argc, char** argv) {
 
             std::cout << "[" << timestamp << "] "
                      << "RX=" << received << " (" << rx_rate << "/s) | "
-                     << "TX=" << published << " (" << tx_rate << "/s)"
+                     << "TX=" << published << " (" << tx_rate << "/s) | "
+                     << "Reconnects=" << bridge.getReconnectCount()
                      << std::endl;
 
             // USEFUL BREAKPOINT HERE
@@ -115,6 +116,7 @@ int main(int argc, char** argv) {
         std::cout << "Final statistics:" << std::endl;
         std::cout << "   Messages received: " << bridge.getReceivedCount() << std::endl;
         std::cout << "   Messages published: " << bridge.getPublishedCount() << std::endl;
+        std::cout << "   Reconnections: " << bridge.getReconnectCount() << std::endl;
         std::cout << "======================================" << std::endl;
         std::cout << std::endl;
 

@@ -26,6 +26,8 @@ EIPtoNATSBridge::EIPtoNATSBridge(const std::string& plcAddress,
     , shouldStop_(false)
     , publishedCount_(0)
     , receivedCount_(0)
+    , needsReconnect_(false)
+    , reconnectCount_(0)
 {
     Logger(LogLevel::INFO) << "EIPtoNATSBridge created - PLC: " << plcAddress
                            << " NATS: " << natsUrl
@@ -63,6 +65,7 @@ bool EIPtoNATSBridge::start() {
 
     // Start the worker thread
     shouldStop_ = false;
+    needsReconnect_ = false;
     running_ = true;
     workerThread_ = std::thread(&EIPtoNATSBridge::workerLoop, this);
 
@@ -107,6 +110,10 @@ uint64_t EIPtoNATSBridge::getPublishedCount() const {
 
 uint64_t EIPtoNATSBridge::getReceivedCount() const {
     return receivedCount_;
+}
+
+uint64_t EIPtoNATSBridge::getReconnectCount() const {
+    return reconnectCount_;
 }
 
 bool EIPtoNATSBridge::initNATS() {
@@ -179,6 +186,7 @@ bool EIPtoNATSBridge::initEIP() {
 
         parameters.o2tRPI = 2000;
         parameters.t2oRPI = 2000;
+        parameters.connectionTimeoutMultiplier = 3; // timeout = (4 << 3) × RPI = 32 × 2ms = 64ms
         parameters.transportTypeTrigger |= NetworkConnectionParams::CLASS1 | NetworkConnectionParams::TRIG_CYCLIC;
 
         // Open connection
@@ -190,10 +198,10 @@ bool EIPtoNATSBridge::initEIP() {
                 this->onEIPDataReceived(realTimeHeader, sequence, data);
             });
 
-            // Set up listener for connection close
+            // Set up listener for connection close — trigger reconnection
             ptr->setCloseListener([this]() {
                 Logger(LogLevel::WARNING) << "EIP connection closed by the PLC";
-                shouldStop_ = true;
+                needsReconnect_ = true;
             });
 
             Logger(LogLevel::INFO) << "EIP connection opened successfully";
@@ -244,9 +252,46 @@ void EIPtoNATSBridge::closeEIP() {
 void EIPtoNATSBridge::workerLoop() {
     Logger(LogLevel::INFO) << "Worker thread started";
 
-    while (!shouldStop_ && connectionManager_->hasOpenConnections()) {
-        // Handle EIP connections (process incoming data)
-        connectionManager_->handleConnections(std::chrono::milliseconds(1));
+    while (!shouldStop_) {
+        // Normal operation: process EIP data
+        if (connectionManager_->hasOpenConnections() && !needsReconnect_) {
+            connectionManager_->handleConnections(std::chrono::milliseconds(1));
+            continue;
+        }
+
+        if (shouldStop_) break;
+
+        // Connection lost — attempt reconnect
+        needsReconnect_ = false;
+        Logger(LogLevel::WARNING) << "EIP connection lost, attempting reconnection...";
+
+        // Clean up old EIP connection (keep NATS alive)
+        closeEIP();
+
+        // Retry loop with delay
+        bool reconnected = false;
+        int attempt = 0;
+        while (!shouldStop_) {
+            attempt++;
+            Logger(LogLevel::INFO) << "Reconnect attempt " << attempt << "...";
+
+            if (initEIP()) {
+                reconnectCount_++;
+                reconnected = true;
+                Logger(LogLevel::INFO) << "Reconnected successfully (attempt " << attempt << ")";
+                break;
+            }
+
+            Logger(LogLevel::WARNING) << "Reconnect attempt " << attempt
+                                      << " failed, retrying in " << kReconnectDelayMs / 1000 << "s...";
+
+            // Sleep in small increments so stop() remains responsive
+            for (int i = 0; i < kReconnectDelayMs / 100 && !shouldStop_; i++) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+        }
+
+        if (!reconnected) break;
     }
 
     Logger(LogLevel::INFO) << "Worker thread finishing";

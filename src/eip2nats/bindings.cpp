@@ -53,11 +53,17 @@ PYBIND11_MODULE(eip_nats_bridge, m) {
              "Returns:\n"
              "    int: Count of received messages")
 
+        .def("get_reconnect_count", &bridge::EIPtoNATSBridge::getReconnectCount,
+             "Get the number of automatic reconnections\n\n"
+             "Returns:\n"
+             "    int: Count of reconnections")
+
         .def("__repr__", [](const bridge::EIPtoNATSBridge &bridge) {
             return "<EIPtoNATSBridge running=" +
                    std::string(bridge.isRunning() ? "True" : "False") +
                    " received=" + std::to_string(bridge.getReceivedCount()) +
-                   " published=" + std::to_string(bridge.getPublishedCount()) + ">";
+                   " published=" + std::to_string(bridge.getPublishedCount()) +
+                   " reconnects=" + std::to_string(bridge.getReconnectCount()) + ">";
         });
 
     // Module information

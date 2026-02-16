@@ -75,8 +75,10 @@ def main():
         received_rate = (received - last_received) / 5.0
         published_rate = (published - last_published) / 5.0
 
+        reconnects = bridge.get_reconnect_count()
         print(f"Stats: RX={received:6d} ({received_rate:5.1f}/s) | "
-              f"TX={published:6d} ({published_rate:5.1f}/s)")
+              f"TX={published:6d} ({published_rate:5.1f}/s) | "
+              f"Reconnects={reconnects}")
 
         last_received = received
         last_published = published
@@ -90,6 +92,7 @@ def main():
     print("Final statistics:")
     print(f"   Messages received: {bridge.get_received_count()}")
     print(f"   Messages published: {bridge.get_published_count()}")
+    print(f"   Reconnections: {bridge.get_reconnect_count()}")
     print("=" * 60)
     print("\nDone")
 
