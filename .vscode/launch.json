@@ -40,10 +40,21 @@
             "preLaunchTask": "build-example-cpp"
         },
         {
-            "name": "Python Example (debug)",
+            "name": "Python RM75E (debug)",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/examples/example_python.py",
+            "program": "${workspaceFolder}/examples/example_python_rm75e.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            }
+        },
+        {
+            "name": "Python ClipX (debug)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/example_python_clipx.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "env": {

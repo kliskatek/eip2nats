@@ -81,12 +81,12 @@ Same as the Windows version but using GDB (`cppdbg`).
 
 Debug the bridge through the Python binding.
 
-- **Script**: `examples/example_python.py`
+- **Script**: `examples/example_python_rm75e.py`
 - **justMyCode**: `false` - allows stepping into binding code
 - **PYTHONPATH**: Points to `src/` to import the local module
 
 **Typical usage:**
-1. Open `examples/example_python.py`
+1. Open `examples/example_python_rm75e.py`
 2. Set breakpoints in the Python script
 3. Select "Python Example (debug)"
 4. Press F5
@@ -117,7 +117,7 @@ The C++ example (`examples/example_cpp.cpp`) allows testing the bridge directly 
 ### Modifying Python example
 
 ```
-1. Edit examples/example_python.py
+1. Edit examples/example_python_rm75e.py
 2. F5 with "Python Example (debug)"
    (no recompilation needed)
 ```

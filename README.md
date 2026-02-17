@@ -51,7 +51,7 @@ source venv/bin/activate    # Linux
 .\venv\Scripts\Activate     # Windows PowerShell
 
 # Run example
-python examples/example_python.py
+python examples/example_python_rm75e.py
 
 # Deactivate when done
 deactivate
@@ -156,7 +156,8 @@ eip2nats/
 │   ├── build_example_cpp.py      # Builds C++ example
 │   └── binding_CMakeLists.txt    # CMake template for binding (Windows)
 ├── examples/
-│   ├── example_python.py         # Python example
+│   ├── example_python_rm75e.py    # Python example (RM75E)
+│   ├── example_python_clipx.py   # Python example (ClipX)
 │   └── example_cpp.cpp           # C++ example (debugging)
 ├── tests/
 │   └── test_python.py            # Python unit tests

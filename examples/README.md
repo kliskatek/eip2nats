@@ -4,8 +4,8 @@ Usage examples for the EIP to NATS bridge.
 
 ## Files
 
-### `example_python.py`
-Complete example of using the bridge from Python.
+### `example_python_rm75e.py`
+Complete example of using the bridge from Python with an RMC75E device.
 
 **Features:**
 - Simple configuration
@@ -18,7 +18,7 @@ Complete example of using the bridge from Python.
 source venv/bin/activate    # Linux
 .\venv\Scripts\Activate     # Windows PowerShell
 
-python examples/example_python.py
+python examples/example_python_rm75e.py
 ```
 
 ### `example_cpp.cpp`

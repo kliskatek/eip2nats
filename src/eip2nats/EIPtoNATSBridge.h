@@ -23,6 +23,12 @@ struct RM75E {
     static constexpr uint8_t T2O_ASSEMBLY    = 1;
 };
 
+struct ClipX {
+    static constexpr uint8_t CONFIG_ASSEMBLY = 151;  // 0x97
+    static constexpr uint8_t O2T_ASSEMBLY    = 150;  // 0x96
+    static constexpr uint8_t T2O_ASSEMBLY    = 100;  // 0x64
+};
+
 } // namespace devices
 
 /**

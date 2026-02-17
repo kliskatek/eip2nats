@@ -80,6 +80,15 @@ PYBIND11_MODULE(eip_nats_bridge, m) {
         .def_property_readonly_static("T2O_ASSEMBLY",
              [](py::object) { return bridge::devices::RM75E::T2O_ASSEMBLY; });
 
+    py::class_<bridge::devices::ClipX>(devices, "ClipX",
+             "Assembly presets for the HBK ClipX device")
+        .def_property_readonly_static("CONFIG_ASSEMBLY",
+             [](py::object) { return bridge::devices::ClipX::CONFIG_ASSEMBLY; })
+        .def_property_readonly_static("O2T_ASSEMBLY",
+             [](py::object) { return bridge::devices::ClipX::O2T_ASSEMBLY; })
+        .def_property_readonly_static("T2O_ASSEMBLY",
+             [](py::object) { return bridge::devices::ClipX::T2O_ASSEMBLY; });
+
     // Module information
     m.attr("__version__") = EIP2NATS_VERSION;
     m.attr("__author__") = "Ibon Zalbide";

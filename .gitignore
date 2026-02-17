@@ -65,3 +65,4 @@ src/eip2nats/lib/*.lib
 
 # Logs
 *.log
+/.claude
