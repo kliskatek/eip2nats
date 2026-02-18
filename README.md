@@ -281,10 +281,14 @@ rm -rf build/ dist/ src/eip2nats/lib/
 
 ## Changelog
 
-### v1.1.0 (2025)
-- Configurable RPI (Requested Packet Interval) via constructor parameter
+### v1.3.0 (2025)
 - Configurable UDP port for T2O data reception, enabling multiple parallel bridges
 - EIPScanner patched to include T2O_SOCKADDR_INFO in Forward Open request
+- Pinned EIPScanner dependency to known-good commit (12c89a5)
+- CPython 3.14 wheel build target
+
+### v1.2.0 (2025)
+- Configurable RPI (Requested Packet Interval) via constructor parameter
 - Added HBK ClipX device preset
 - Added ClipX examples (Python and C++)
 - Raspberry Pi build support
