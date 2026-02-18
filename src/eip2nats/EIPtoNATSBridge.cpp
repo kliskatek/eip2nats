@@ -19,7 +19,8 @@ EIPtoNATSBridge::EIPtoNATSBridge(const std::string& plcAddress,
                                  uint8_t o2tAssembly,
                                  uint8_t t2oAssembly,
                                  uint16_t t2oSize,
-                                 uint32_t rpi)
+                                 uint32_t rpi,
+                                 uint16_t port)
     : plcAddress_(plcAddress)
     , natsUrl_(natsUrl)
     , natsSubject_(natsSubject)
@@ -29,6 +30,7 @@ EIPtoNATSBridge::EIPtoNATSBridge(const std::string& plcAddress,
     , t2oAssembly_(t2oAssembly)
     , t2oSize_(t2oSize)
     , rpi_(rpi)
+    , port_(port)
     , natsConn_(nullptr)
     , natsOpts_(nullptr)
     , connectionManager_(nullptr)
@@ -47,7 +49,8 @@ EIPtoNATSBridge::EIPtoNATSBridge(const std::string& plcAddress,
                            << " o2t=" << (int)o2tAssembly
                            << " t2o=" << (int)t2oAssembly
                            << " t2oSize=" << t2oSize
-                           << " rpi=" << rpi;
+                           << " rpi=" << rpi
+                           << " port=" << port;
 }
 
 EIPtoNATSBridge::~EIPtoNATSBridge() {
@@ -201,6 +204,7 @@ bool EIPtoNATSBridge::initEIP() {
 
         parameters.o2tRPI = rpi_;
         parameters.t2oRPI = rpi_;
+        parameters.receivePort = port_;
         parameters.connectionTimeoutMultiplier = 3; // timeout = (4 << 3) × RPI = 32 × 2ms = 64ms
         parameters.transportTypeTrigger |= NetworkConnectionParams::CLASS1 | NetworkConnectionParams::TRIG_CYCLIC;
 

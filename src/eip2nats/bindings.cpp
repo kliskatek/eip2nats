@@ -12,7 +12,7 @@ PYBIND11_MODULE(eip_nats_bridge, m) {
     m.doc() = "EIP to NATS Bridge - Bridge between EtherNet/IP and NATS";
 
     py::class_<bridge::EIPtoNATSBridge>(m, "EIPtoNATSBridge")
-        .def(py::init<const std::string&, const std::string&, const std::string&, bool, uint8_t, uint8_t, uint8_t, uint16_t, uint32_t>(),
+        .def(py::init<const std::string&, const std::string&, const std::string&, bool, uint8_t, uint8_t, uint8_t, uint16_t, uint32_t, uint16_t>(),
              py::arg("plc_address"),
              py::arg("nats_url"),
              py::arg("nats_subject"),
@@ -22,6 +22,7 @@ PYBIND11_MODULE(eip_nats_bridge, m) {
              py::arg("t2o_assembly") = bridge::devices::RM75E::T2O_ASSEMBLY,
              py::arg("t2o_size") = 0,
              py::arg("rpi") = 2000,
+             py::arg("port") = 2222,
              "Bridge constructor\n\n"
              "Args:\n"
              "    plc_address (str): PLC IP address (e.g. '192.168.17.200')\n"
@@ -32,7 +33,8 @@ PYBIND11_MODULE(eip_nats_bridge, m) {
              "    o2t_assembly (int): O2T data assembly instance (default: 2)\n"
              "    t2o_assembly (int): T2O data assembly instance (default: 1)\n"
              "    t2o_size (int): T2O connection size in bytes (default: 0)\n"
-             "    rpi (int): Requested Packet Interval in microseconds, applied to both O2T and T2O (default: 2000)")
+             "    rpi (int): Requested Packet Interval in microseconds, applied to both O2T and T2O (default: 2000)\n"
+             "    port (int): Local UDP port for receiving implicit I/O data (default: 2222). Use different ports for parallel bridges")
 
         .def("start", &bridge::EIPtoNATSBridge::start,
              "Start the bridge: connect to NATS, open EIP connection and start the thread\n\n"

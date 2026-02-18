@@ -33,10 +33,20 @@ def main():
     nats_url = "nats://192.168.17.138:4222"
     nats_subject = "plc.eip.data"
 
+    T2O_SIZE = 100   # T→O connection size in bytes
+    RPI      = 2000  # Requested Packet Interval in µs (2000 = 2 ms)
+    PORT     = 2222  # Local UDP port for receiving I/O data
+
     print("Configuration:")
     print(f"   PLC: {plc_address}")
     print(f"   NATS: {nats_url}")
     print(f"   Subject: {nats_subject}")
+    print(f"   Config Assembly: {eip2nats.devices.RM75E.CONFIG_ASSEMBLY} (0x{eip2nats.devices.RM75E.CONFIG_ASSEMBLY:02X})")
+    print(f"   O2T Assembly:    {eip2nats.devices.RM75E.O2T_ASSEMBLY} (0x{eip2nats.devices.RM75E.O2T_ASSEMBLY:02X})")
+    print(f"   T2O Assembly:    {eip2nats.devices.RM75E.T2O_ASSEMBLY} (0x{eip2nats.devices.RM75E.T2O_ASSEMBLY:02X})")
+    print(f"   T2O Size:        {T2O_SIZE} bytes")
+    print(f"   RPI:             {RPI} µs")
+    print(f"   Port:            {PORT}")
     print()
 
     # Create bridge (using RM75E device presets)
@@ -49,7 +59,9 @@ def main():
         config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
         o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
         t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
-        t2o_size=100,
+        t2o_size=T2O_SIZE,
+        rpi=RPI,
+        port=PORT,
     )
 
     print(f"   {bridge}")

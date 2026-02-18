@@ -12,6 +12,7 @@ All dependencies (libnats, libEIPScanner) are **bundled** in the wheel.
 - **Device presets**: Built-in assembly constants for known devices (RM75E, ClipX)
 - **High performance**: Native C++ bindings with pybind11
 - **Auto-reconnect**: Recovers automatically from connection loss
+- **Parallel bridges**: Run multiple bridges on different UDP ports simultaneously
 - **Thread-safe**: Safe handling of multiple connections
 
 ## Installation
@@ -71,6 +72,8 @@ bridge = eip2nats.EIPtoNATSBridge(
     o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
     t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
     t2o_size=100,
+    rpi=2000,                      # Requested Packet Interval (µs)
+    port=2222,                     # Local UDP port for T2O data
 )
 
 # Start
@@ -219,6 +222,7 @@ bridge = eip2nats.EIPtoNATSBridge(
     t2o_assembly: int = 1,          # T2O data assembly instance
     t2o_size: int = 0,              # T2O connection size in bytes
     rpi: int = 2000,                # Requested Packet Interval (µs), applied to O2T and T2O
+    port: int = 2222,               # Local UDP port for receiving I/O data
 )
 ```
 
@@ -279,6 +283,8 @@ rm -rf build/ dist/ src/eip2nats/lib/
 
 ### v1.1.0 (2025)
 - Configurable RPI (Requested Packet Interval) via constructor parameter
+- Configurable UDP port for T2O data reception, enabling multiple parallel bridges
+- EIPScanner patched to include T2O_SOCKADDR_INFO in Forward Open request
 - Added HBK ClipX device preset
 - Added ClipX examples (Python and C++)
 - Raspberry Pi build support

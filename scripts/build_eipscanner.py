@@ -92,6 +92,88 @@ def _patch_eipscanner_for_windows(cfg, eip_dir):
     print(f"  {patches_applied} file(s) patched")
 
 
+def _patch_eipscanner_receive_port(eip_dir):
+    """Add configurable receivePort to ConnectionParameters.
+
+    By default EIPScanner binds the implicit I/O socket to port 2222.
+    This patch adds a `receivePort` field so each ConnectionManager instance
+    can listen on a different UDP port, enabling multiple bridges in parallel.
+    """
+    print("\nApplying receivePort patch...")
+    patches_applied = 0
+
+    # 1. Add receivePort field to ConnectionParameters.h
+    params_h = eip_dir / "src" / "cip" / "connectionManager" / "ConnectionParameters.h"
+    content = params_h.read_text(encoding="utf-8")
+    marker = "std::vector<uint8_t> connectionPath = {};"
+    if "receivePort" not in content:
+        content = content.replace(
+            marker,
+            marker + "\n\t\tCipUint receivePort = 2222;  // UDP port for receiving T2O data"
+        )
+        params_h.write_text(content, encoding="utf-8")
+        patches_applied += 1
+        print("  Patched: ConnectionParameters.h (added receivePort)")
+
+    # 2. Patch ConnectionManager.cpp
+    cm_cpp = eip_dir / "src" / "ConnectionManager.cpp"
+    content = cm_cpp.read_text(encoding="utf-8")
+
+    # 2a. Use receivePort for the local bound socket instead of EIP_DEFAULT_IMPLICIT_PORT
+    old_bind = "findOrCreateSocket(sockets::EndPoint(si->getRemoteEndPoint().getHost(), EIP_DEFAULT_IMPLICIT_PORT));"
+    new_bind = "findOrCreateSocket(sockets::EndPoint(si->getRemoteEndPoint().getHost(), connectionParameters.receivePort));"
+    if old_bind in content:
+        content = content.replace(old_bind, new_bind)
+        patches_applied += 1
+        print("  Patched: ConnectionManager.cpp (use receivePort for bind)")
+
+    # 2b. Include T2O_SOCKADDR_INFO in Forward Open request so the PLC sends
+    #     T2O data to our receivePort instead of the default 2222
+    old_fwd_open = (
+        '\tMessageRouterResponse messageRouterResponse;\n'
+        '\t\tif (isLarge) {\n'
+        '\t\t\tLargeForwardOpenRequest request(connectionParameters);\n'
+        '\t\t\tmessageRouterResponse = _messageRouter->sendRequest(si,\n'
+        '\t\t\t\tstatic_cast<cip::CipUsint>(ConnectionManagerServiceCodes::LARGE_FORWARD_OPEN),\n'
+        '\t\t\t\tEPath(6, 1), request.pack(), {});\n'
+        '\t\t} else {\n'
+        '\t\t\tForwardOpenRequest request(connectionParameters);\n'
+        '\t\t\tmessageRouterResponse = _messageRouter->sendRequest(si,\n'
+        '\t\t\t\tstatic_cast<cip::CipUsint>(ConnectionManagerServiceCodes::FORWARD_OPEN),\n'
+        '\t\t\t\tEPath(6, 1), request.pack(), {});\n'
+        '\t\t}'
+    )
+    new_fwd_open = (
+        '\t// Build T2O sockaddr info so the target sends T2O data to our receivePort\n'
+        '\t\tstd::vector<eip::CommonPacketItem> fwdOpenItems;\n'
+        '\t\t{\n'
+        '\t\t\tBuffer sockBuf;\n'
+        '\t\t\tsockBuf << sockets::EndPoint("0.0.0.0", connectionParameters.receivePort);\n'
+        '\t\t\tfwdOpenItems.emplace_back(eip::CommonPacketItemIds::T2O_SOCKADDR_INFO, sockBuf.data());\n'
+        '\t\t}\n'
+        '\n'
+        '\t\tMessageRouterResponse messageRouterResponse;\n'
+        '\t\tif (isLarge) {\n'
+        '\t\t\tLargeForwardOpenRequest request(connectionParameters);\n'
+        '\t\t\tmessageRouterResponse = _messageRouter->sendRequest(si,\n'
+        '\t\t\t\tstatic_cast<cip::CipUsint>(ConnectionManagerServiceCodes::LARGE_FORWARD_OPEN),\n'
+        '\t\t\t\tEPath(6, 1), request.pack(), fwdOpenItems);\n'
+        '\t\t} else {\n'
+        '\t\t\tForwardOpenRequest request(connectionParameters);\n'
+        '\t\t\tmessageRouterResponse = _messageRouter->sendRequest(si,\n'
+        '\t\t\t\tstatic_cast<cip::CipUsint>(ConnectionManagerServiceCodes::FORWARD_OPEN),\n'
+        '\t\t\t\tEPath(6, 1), request.pack(), fwdOpenItems);\n'
+        '\t\t}'
+    )
+    if old_fwd_open in content:
+        content = content.replace(old_fwd_open, new_fwd_open)
+        patches_applied += 1
+        print("  Patched: ConnectionManager.cpp (T2O_SOCKADDR_INFO in Forward Open)")
+
+    cm_cpp.write_text(content, encoding="utf-8")
+    print(f"  {patches_applied} file(s) patched")
+
+
 def build_eipscanner(cfg=None):
     """Build EIPScanner"""
     if cfg is None:
@@ -119,6 +201,9 @@ def build_eipscanner(cfg=None):
     # Apply Windows patches if needed
     if IS_WINDOWS:
         _patch_eipscanner_for_windows(cfg, eip_dir)
+
+    # Apply receivePort patch (all platforms)
+    _patch_eipscanner_receive_port(eip_dir)
 
     # Build
     eip_build_dir.mkdir(exist_ok=True)

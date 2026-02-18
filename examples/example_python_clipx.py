@@ -37,6 +37,7 @@ def main():
     # Tamaño en bytes de los datos T→O (ajustar según configuración del ClipX)
     T2O_SIZE = 4
     RPI      = 1000  # Requested Packet Interval en µs (1000 = 1 ms)
+    PORT     = 2223  # Puerto UDP local para recibir datos I/O
 
     print("Configuración:")
     print(f"  ClipX:           {clipx_address}")
@@ -47,6 +48,7 @@ def main():
     print(f"  T2O Assembly:    {eip2nats.devices.ClipX.T2O_ASSEMBLY} (0x{eip2nats.devices.ClipX.T2O_ASSEMBLY:02X})")
     print(f"  T2O Size:        {T2O_SIZE} bytes")
     print(f"  RPI:             {RPI} µs")
+    print(f"  Port:            {PORT}")
     print()
 
     # Crear bridge con los assemblies del ClipX (usando device preset)
@@ -61,6 +63,7 @@ def main():
         t2o_assembly=eip2nats.devices.ClipX.T2O_ASSEMBLY,
         t2o_size=T2O_SIZE,
         rpi=RPI,
+        port=PORT,
     )
 
     print(f"  {bridge}")

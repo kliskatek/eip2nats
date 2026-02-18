@@ -36,12 +36,17 @@ int main(int argc, char** argv) {
     std::string nats_url = "nats://192.168.17.138:4222";
     std::string nats_subject = "plc.cpp.test";
     bool use_binary = true;
+    uint16_t t2o_size = 100;
+    uint32_t rpi = 2000;
+    uint16_t port = 2223;  // UDP port for receiving I/O data
 
     std::cout << "Configuration:" << std::endl;
     std::cout << "   PLC: " << plc_address << std::endl;
     std::cout << "   NATS: " << nats_url << std::endl;
     std::cout << "   Subject: " << nats_subject << std::endl;
     std::cout << "   Format: " << (use_binary ? "Binary" : "JSON") << std::endl;
+    std::cout << "   RPI: " << rpi << " µs" << std::endl;
+    std::cout << "   Port: " << port << std::endl;
     std::cout << std::endl;
 
     try {
@@ -51,8 +56,7 @@ int main(int argc, char** argv) {
                                devices::RM75E::CONFIG_ASSEMBLY,
                                devices::RM75E::O2T_ASSEMBLY,
                                devices::RM75E::T2O_ASSEMBLY,
-                               100  // t2o_size: application-specific
-        );
+                               t2o_size, rpi, port);
 
         // USEFUL BREAKPOINT HERE
         // You can inspect the bridge before starting

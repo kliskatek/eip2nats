@@ -54,7 +54,8 @@ public:
                     uint8_t o2tAssembly = devices::RM75E::O2T_ASSEMBLY,
                     uint8_t t2oAssembly = devices::RM75E::T2O_ASSEMBLY,
                     uint16_t t2oSize = 0,
-                    uint32_t rpi = 2000);
+                    uint32_t rpi = 2000,
+                    uint16_t port = 2222);
 
     /**
      * @brief Destructor - ensures everything is cleanly closed
@@ -107,6 +108,7 @@ private:
     uint8_t t2oAssembly_;
     uint16_t t2oSize_;
     uint32_t rpi_;
+    uint16_t port_;
 
     // NATS
     natsConnection* natsConn_;

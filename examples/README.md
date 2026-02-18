@@ -98,6 +98,7 @@ bridge = eip2nats.EIPtoNATSBridge(
     t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
     t2o_size=100,                  # Application-specific
     rpi=2000,                      # Requested Packet Interval (µs)
+    port=2222,                     # Local UDP port for T2O data
 )
 
 # 2. Start
@@ -134,6 +135,7 @@ bridge = eip2nats.EIPtoNATSBridge(
     t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
     t2o_size=100,
     rpi=2000,
+    port=2222,
 )
 
 @app.route('/start')
@@ -163,23 +165,23 @@ if __name__ == '__main__':
 import eip2nats
 import time
 
-# Create multiple bridges
+# Create multiple bridges (each on a different UDP port)
 bridges = [
     eip2nats.EIPtoNATSBridge("192.168.17.200", "nats://localhost:4222", "plc1.data",
                              config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
                              o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
                              t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
-                             t2o_size=100, rpi=2000),
+                             t2o_size=100, rpi=2000, port=2222),
     eip2nats.EIPtoNATSBridge("192.168.17.201", "nats://localhost:4222", "plc2.data",
                              config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
                              o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
                              t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
-                             t2o_size=100, rpi=2000),
+                             t2o_size=100, rpi=2000, port=2223),
     eip2nats.EIPtoNATSBridge("192.168.17.202", "nats://localhost:4222", "plc3.data",
                              config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
                              o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
                              t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
-                             t2o_size=100, rpi=2000),
+                             t2o_size=100, rpi=2000, port=2224),
 ]
 
 # Start all
@@ -230,6 +232,7 @@ bridge = eip2nats.EIPtoNATSBridge(
     t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
     t2o_size=100,
     rpi=2000,
+    port=2222,
 )
 
 logger.info("Starting bridge...")
