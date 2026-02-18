@@ -9,7 +9,7 @@ All dependencies (libnats, libEIPScanner) are **bundled** in the wheel.
 - **Read-only**: Captures PLC I/O data via implicit connection, no writes
 - **Self-contained**: Includes compiled libnats and libEIPScanner
 - **Zero dependencies**: No system library installation required
-- **Device presets**: Built-in assembly constants for known devices (RM75E, etc.)
+- **Device presets**: Built-in assembly constants for known devices (RM75E, ClipX)
 - **High performance**: Native C++ bindings with pybind11
 - **Auto-reconnect**: Recovers automatically from connection loss
 - **Thread-safe**: Safe handling of multiple connections
@@ -157,8 +157,9 @@ eip2nats/
 │   └── binding_CMakeLists.txt    # CMake template for binding (Windows)
 ├── examples/
 │   ├── example_python_rm75e.py    # Python example (RM75E)
-│   ├── example_python_clipx.py   # Python example (ClipX)
-│   └── example_cpp.cpp           # C++ example (debugging)
+│   ├── example_python_clipx.py    # Python example (ClipX)
+│   ├── example_cpp_clipx.cpp      # C++ example (ClipX)
+│   └── example_cpp.cpp            # C++ example (debugging)
 ├── tests/
 │   └── test_python.py            # Python unit tests
 └── build/                        # Auto-generated, in .gitignore
@@ -217,6 +218,7 @@ bridge = eip2nats.EIPtoNATSBridge(
     o2t_assembly: int = 2,          # O2T data assembly instance
     t2o_assembly: int = 1,          # T2O data assembly instance
     t2o_size: int = 0,              # T2O connection size in bytes
+    rpi: int = 2000,                # Requested Packet Interval (µs), applied to O2T and T2O
 )
 ```
 
@@ -233,9 +235,15 @@ bridge = eip2nats.EIPtoNATSBridge(
 Pre-defined assembly constants for known EIP devices:
 
 ```python
+# RMC75E (Delta Computer Systems)
 eip2nats.devices.RM75E.CONFIG_ASSEMBLY  # 4
 eip2nats.devices.RM75E.O2T_ASSEMBLY     # 2
 eip2nats.devices.RM75E.T2O_ASSEMBLY     # 1
+
+# ClipX (HBK / Hottinger Brüel & Kjær)
+eip2nats.devices.ClipX.CONFIG_ASSEMBLY  # 1
+eip2nats.devices.ClipX.O2T_ASSEMBLY     # 101
+eip2nats.devices.ClipX.T2O_ASSEMBLY     # 100
 ```
 
 ## Troubleshooting
@@ -268,6 +276,12 @@ rm -rf build/ dist/ src/eip2nats/lib/
 ```
 
 ## Changelog
+
+### v1.1.0 (2025)
+- Configurable RPI (Requested Packet Interval) via constructor parameter
+- Added HBK ClipX device preset
+- Added ClipX examples (Python and C++)
+- Raspberry Pi build support
 
 ### v1.0.0 (2025)
 - Initial release

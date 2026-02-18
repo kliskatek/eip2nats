@@ -21,6 +21,27 @@ source venv/bin/activate    # Linux
 python examples/example_python_rm75e.py
 ```
 
+### `example_python_clipx.py`
+Complete example of using the bridge from Python with an HBK ClipX device.
+
+**Run:**
+```bash
+source venv/bin/activate    # Linux
+.\venv\Scripts\Activate     # Windows PowerShell
+
+python examples/example_python_clipx.py
+```
+
+### `example_cpp_clipx.cpp`
+C++ example for ClipX implicit connection (standalone, no bridge/NATS).
+
+**Build and run:**
+```bash
+python scripts/build_example_cpp.py
+build/example_cpp/example_cpp        # Linux
+build\example_cpp\example_cpp.exe    # Windows
+```
+
 ### `example_cpp.cpp`
 C++ example for debugging the bridge without Python.
 
@@ -76,6 +97,7 @@ bridge = eip2nats.EIPtoNATSBridge(
     o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
     t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
     t2o_size=100,                  # Application-specific
+    rpi=2000,                      # Requested Packet Interval (µs)
 )
 
 # 2. Start
@@ -111,6 +133,7 @@ bridge = eip2nats.EIPtoNATSBridge(
     o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
     t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
     t2o_size=100,
+    rpi=2000,
 )
 
 @app.route('/start')
@@ -146,17 +169,17 @@ bridges = [
                              config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
                              o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
                              t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
-                             t2o_size=100),
+                             t2o_size=100, rpi=2000),
     eip2nats.EIPtoNATSBridge("192.168.17.201", "nats://localhost:4222", "plc2.data",
                              config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
                              o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
                              t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
-                             t2o_size=100),
+                             t2o_size=100, rpi=2000),
     eip2nats.EIPtoNATSBridge("192.168.17.202", "nats://localhost:4222", "plc3.data",
                              config_assembly=eip2nats.devices.RM75E.CONFIG_ASSEMBLY,
                              o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
                              t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
-                             t2o_size=100),
+                             t2o_size=100, rpi=2000),
 ]
 
 # Start all
@@ -206,6 +229,7 @@ bridge = eip2nats.EIPtoNATSBridge(
     o2t_assembly=eip2nats.devices.RM75E.O2T_ASSEMBLY,
     t2o_assembly=eip2nats.devices.RM75E.T2O_ASSEMBLY,
     t2o_size=100,
+    rpi=2000,
 )
 
 logger.info("Starting bridge...")
