@@ -186,15 +186,20 @@ def build_eipscanner(cfg=None):
     eip_dir = cfg.deps_dir / "EIPScanner"
     eip_build_dir = eip_dir / "build"
 
+    # Pinned commit - this is the version our patches are tested against
+    EIPSCANNER_COMMIT = "12c89a5"
+
     # Clone if not present
     if not eip_dir.exists():
-        print("Cloning EIPScanner from GitHub...")
+        print(f"Cloning EIPScanner from GitHub (commit {EIPSCANNER_COMMIT})...")
         cfg.run_command([
             "git", "clone",
-            "--depth", "1",
             "https://github.com/nimbuscontrols/EIPScanner.git",
             str(eip_dir)
         ])
+        cfg.run_command([
+            "git", "checkout", EIPSCANNER_COMMIT
+        ], cwd=eip_dir)
     else:
         print("EIPScanner already exists, skipping clone")
 
