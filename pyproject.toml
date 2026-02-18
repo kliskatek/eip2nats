@@ -60,7 +60,7 @@ artifacts = [
 # Uses hatch_build.py to force platform-specific wheel tags
 
 [tool.cibuildwheel]
-build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
+build = "cp39-* cp310-* cp311-* cp312-* cp313-* cp314-*"
 skip = "*-musllinux*"
 
 # Build nats.c + EIPScanner once per platform (shared across Python versions)
