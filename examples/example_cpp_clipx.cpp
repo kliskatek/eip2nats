@@ -44,6 +44,7 @@ static constexpr uint8_t  T2O_ASSEMBLY    = 100;  // 0x64  ClipX → Scanner (16
 //   T2O: 166 data → EIPScanner sends 168 on wire (+2 seq)
 static constexpr uint16_t O2T_SIZE        = 0;   // Assembly 101 data
 static constexpr uint16_t T2O_SIZE        = 166;  // Assembly 100 data
+static constexpr uint32_t RPI             = 1000; // Requested Packet Interval (µs)
 
 // ── Global stop flag ──────────────────────────────────────
 volatile bool keep_running = true;
@@ -79,6 +80,7 @@ int main() {
     std::cout << "T2O Assembly:    " << (int)T2O_ASSEMBLY    << " (0x" << std::hex << (int)T2O_ASSEMBLY    << ")" << std::dec << std::endl;
     std::cout << "O2T Data Size:   " << O2T_SIZE << " bytes" << std::endl;
     std::cout << "T2O Data Size:   " << T2O_SIZE << " bytes" << std::endl;
+    std::cout << "RPI:             " << RPI << " µs" << std::endl;
     std::cout << std::endl;
 
     try {
@@ -102,8 +104,8 @@ int main() {
         params.o2tNetworkConnectionParams |= NetworkConnectionParams::P2P;
         params.o2tNetworkConnectionParams |= O2T_SIZE;
 
-        params.o2tRPI = 1000;  // 10 ms (matching working config)
-        params.t2oRPI = 1000;  // 10 ms
+        params.o2tRPI = RPI;
+        params.t2oRPI = RPI;
         params.connectionTimeoutMultiplier = 4;
         params.transportTypeTrigger |= NetworkConnectionParams::CLASS1 | NetworkConnectionParams::TRIG_CYCLIC;
 

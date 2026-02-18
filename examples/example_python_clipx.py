@@ -35,7 +35,8 @@ def main():
     nats_subject  = "clipx.eip.data"
 
     # Tamaño en bytes de los datos T→O (ajustar según configuración del ClipX)
-    T2O_SIZE = 166
+    T2O_SIZE = 4
+    RPI      = 1000  # Requested Packet Interval en µs (1000 = 1 ms)
 
     print("Configuración:")
     print(f"  ClipX:           {clipx_address}")
@@ -45,6 +46,7 @@ def main():
     print(f"  O2T Assembly:    {eip2nats.devices.ClipX.O2T_ASSEMBLY} (0x{eip2nats.devices.ClipX.O2T_ASSEMBLY:02X})")
     print(f"  T2O Assembly:    {eip2nats.devices.ClipX.T2O_ASSEMBLY} (0x{eip2nats.devices.ClipX.T2O_ASSEMBLY:02X})")
     print(f"  T2O Size:        {T2O_SIZE} bytes")
+    print(f"  RPI:             {RPI} µs")
     print()
 
     # Crear bridge con los assemblies del ClipX (usando device preset)
@@ -58,6 +60,7 @@ def main():
         o2t_assembly=eip2nats.devices.ClipX.O2T_ASSEMBLY,
         t2o_assembly=eip2nats.devices.ClipX.T2O_ASSEMBLY,
         t2o_size=T2O_SIZE,
+        rpi=RPI,
     )
 
     print(f"  {bridge}")
