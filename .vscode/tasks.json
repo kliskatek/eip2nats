@@ -19,6 +19,20 @@
             "problemMatcher": ["$gcc", "$msCompile"]
         },
         {
+            "label": "build-example-cpp-clipx",
+            "type": "shell",
+            "command": "python scripts/build_example_cpp_clipx.py",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": ["$gcc", "$msCompile"]
+        },
+        {
             "label": "build-binding",
             "type": "shell",
             "command": "python scripts/build_binding.py",

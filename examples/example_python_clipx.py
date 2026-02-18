@@ -2,10 +2,10 @@
 """
 eip2nats - Ejemplo para HBK ClipX
 
-Conexión implícita (I/O Class 1) con assemblies:
-  - Input  (T→O): Instance 100 (0x64) - Datos de medida ClipX → Scanner
-  - Output (O→T): Instance 150 (0x96) - Datos de control Scanner → ClipX
-  - Config:       Instance 151 (0x97) - Configuración (tamaño 0)
+Conexión implícita (I/O Class 1) con assemblies (según EDS):
+  - Input  (T→O): Instance 100 (0x64) - ClipX → Scanner  (166 bytes)
+  - Output (O→T): Instance 101 (0x65) - Scanner → ClipX   (44 bytes)
+  - Config:       Instance   1 (0x01)
 """
 
 import eip2nats
@@ -30,12 +30,12 @@ def main():
     signal.signal(signal.SIGTERM, signal_handler)
 
     # Configuración - MODIFICAR ESTAS VARIABLES
-    clipx_address = "192.168.1.100"       # IP del ClipX
+    clipx_address = "192.168.17.114"       # IP del ClipX
     nats_url      = "nats://localhost:4222"
     nats_subject  = "clipx.eip.data"
 
     # Tamaño en bytes de los datos T→O (ajustar según configuración del ClipX)
-    T2O_SIZE = 64
+    T2O_SIZE = 166
 
     print("Configuración:")
     print(f"  ClipX:           {clipx_address}")
@@ -77,13 +77,13 @@ def main():
     last_published = 0
 
     while keep_running and bridge.is_running():
-        time.sleep(5)
+        time.sleep(2)
 
         received = bridge.get_received_count()
         published = bridge.get_published_count()
 
-        rx_rate = (received - last_received) / 5.0
-        tx_rate = (published - last_published) / 5.0
+        rx_rate = (received - last_received) / 2
+        tx_rate = (published - last_published) / 2
         reconnects = bridge.get_reconnect_count()
 
         print(f"Stats: RX={received:6d} ({rx_rate:5.1f}/s) | "

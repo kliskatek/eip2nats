@@ -24,9 +24,9 @@ struct RM75E {
 };
 
 struct ClipX {
-    static constexpr uint8_t CONFIG_ASSEMBLY = 151;  // 0x97
-    static constexpr uint8_t O2T_ASSEMBLY    = 150;  // 0x96
-    static constexpr uint8_t T2O_ASSEMBLY    = 100;  // 0x64
+    static constexpr uint8_t CONFIG_ASSEMBLY = 1;    // 0x01
+    static constexpr uint8_t O2T_ASSEMBLY    = 101;  // 0x65  Scanner → ClipX (44 bytes)
+    static constexpr uint8_t T2O_ASSEMBLY    = 100;  // 0x64  ClipX → Scanner (166 bytes)
 };
 
 } // namespace devices
